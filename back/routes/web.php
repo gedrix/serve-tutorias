@@ -34,11 +34,17 @@ $router->get('/estudiantes-titulacion-periodo/{external_id}/{external_periodo}/{
 $router->post('/smt','UsuarioController@registrarSmt');
 $router->get('/smt-lista','UsuarioController@listarSmt');
 $router->post('/smt-editar','UsuarioController@editarSmt');
-
+//$router->post('/estudiante-editar','UsuarioController@editarEstudiante');
+//$router->post('/docente-editar','UsuarioController@editarDocente');
 $router->post('/usuario-editar','UsuarioController@editarPassword');
 $router->get('/lista-estudiante','UsuarioController@listaUsuarioEstudiante');
 $router->get('/lista-docente','UsuarioController@listaUsuarioDocente');
 $router->post('/banear-usuario/{external_id}','UsuarioController@modificarEstadoUsuario');
+
+$router->post('/recuperar-clave','UsuarioController@recuperarClave');
+
+
+
 
 /*login*/
 $router->post('/usuario/login', 'UsuarioController@login');
