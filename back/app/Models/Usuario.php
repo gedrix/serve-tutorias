@@ -22,12 +22,12 @@ class Usuario extends Model
 
     public function docente(){
 
-        return $this->hasOne('App\Models\docente', 'id_usuario');
+        return $this->hasOne('App\Models\Docente', 'id_usuario');
     }
 
     public function estudiante(){
 
-        return $this->hasOne('App\Models\estudiante', 'id_usuario');
+        return $this->hasOne('App\Models\Estudiante', 'id_usuario');
     }
 
 }

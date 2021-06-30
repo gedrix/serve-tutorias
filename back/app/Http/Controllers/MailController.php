@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\smt;
+use App\Models\Smt;
 use Exception;
 use Illuminate\Http\Request;
 use PHPMailer\PHPMailer\PHPMailer;

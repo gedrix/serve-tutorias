@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\asistencia;
-use App\Models\estudiante;
-use App\Models\materia;
-use App\Models\docente;
-use App\Models\reserva;
-use App\Models\periodoAcademico;
+use App\Models\Asistencia;
+use App\Models\Estudiante;
+use App\Models\Materia;
+use App\Models\Docente;
+use App\Models\Reserva;
+use App\Models\PeriodoAcademico;
 
 // use PHPMailer\PHPMailer\PHPMailer;
 // use PHPMailer\PHPMailer\Exception;
@@ -276,7 +276,7 @@ class ReservaController extends Controller
                     // "horaFin" => $reserva->hora_fin,
                    // "estudiante" => $reserva->id_estudiante,
                     "ciclo" => self::getCicloEstudiante($reserva->id_estudiante),
-                    
+
                 ];
             }
             self::estadoJson(200, true, '');
@@ -361,7 +361,7 @@ class ReservaController extends Controller
         $estudiante = estudiante::where("external_es", $external)->first();
         return $estudiante->nombres . " " . $estudiante->apellidos;
     }
-    
+
     private function getNombreEstudiante($external)
     {
         $estudiante = estudiante::where("external_es", $external)->first();

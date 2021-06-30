@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\docente;
-use App\Models\diastutoria;
-use App\Models\horatutoria;
-use App\Models\reserva;
-use App\Models\materia;
-use App\Models\materiaDocente;
-use App\Models\periodoAcademico;
+use App\Models\Docente;
+use App\Models\Diastutoria;
+use App\Models\Horatutoria;
+use App\Models\Reserva;
+use App\Models\Materia;
+use App\Models\MateriaDocente;
+use App\Models\PeriodoAcademico;
 use Illuminate\Http\Request;
 use PhpOption\Some;
 
@@ -41,7 +41,7 @@ class DiatutoriaController extends Controller
         global $estado, $datos;
         self::iniciarObjetoJSon();
 
-        $periodos = periodoAcademico::where("estado", "<",  2)->get(); 
+        $periodos = periodoAcademico::where("estado", "<",  2)->get();
         foreach ($periodos as $periodo) {
             $datos['data'][] = [
                 "nombrePeriodo" => $periodo->nombre_periodo,
@@ -59,7 +59,7 @@ class DiatutoriaController extends Controller
     {
         global $estado, $datos;
         self::iniciarObjetoJSon();
-        
+
         $periodo = periodoAcademico::where("external_periodo", $external_id)->first();
         $periodoObj = periodoAcademico::find($periodo->id);
 
@@ -239,7 +239,7 @@ class DiatutoriaController extends Controller
         }
         return $data;
     }
-    
+
     //registro de horas de tutorias
     // public function registroDiaHoraTutoria(Request $request, $external_id)
     // {

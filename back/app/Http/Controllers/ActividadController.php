@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\asistencia;
-use App\Models\estudiante;
-use App\Models\docente;
-use App\Models\reserva;
-use App\Models\registroactividad;
-use App\Models\encuestatutoria;
-use App\Models\periodoAcademico;
+use App\Models\Asistencia;
+use App\Models\Estudiante;
+use App\Models\Docente;
+use App\Models\Reserva;
+use App\Models\Registroactividad;
+use App\Models\Encuestatutoria;
+use App\Models\PeriodoAcademico;
 
 use Illuminate\Http\Request;
 
@@ -78,7 +78,7 @@ class ActividadController extends Controller
 
         date_default_timezone_set("America/Guayaquil");
         setlocale(LC_TIME, "spanish");
-        
+
         if ($request->json()) {
             $data = $request->json()->all();
             $reserva = reserva::where("external_rt", $data["externalReserva"])->first();
@@ -173,11 +173,11 @@ class ActividadController extends Controller
                 ];
             }
             self::estadoJson(200, true, '');
-            return response()->json($datos, $estado);   
+            return response()->json($datos, $estado);
 
     }
 
-   
+
 
     //listar estudiantes de una tutoria
     public function listarEstudiantesReserva($external_id)
@@ -204,7 +204,7 @@ class ActividadController extends Controller
         return $estudiante->nombres . " " . $estudiante->apellidos;
     }
 
-    
+
 
 
 
@@ -227,14 +227,14 @@ class ActividadController extends Controller
     public function devolverHoraFecha (){
         global $estado, $datos;
         self::iniciarObjetoJSon();
-        
+
         date_default_timezone_set("America/Guayaquil");
         setlocale(LC_TIME, "spanish");
         $datos['data'][] = [
             "hora" => date("H:i:s"),
             "dia" => date("d/m/y")
         ];
-        
+
         self::estadoJson(200, true, '');
         return response()->json($datos, $estado);
     }

@@ -3,15 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Usuario;
-use App\Models\estudiante;
-use App\Models\docente;
-use App\Models\diastutoria;
-use App\Models\reserva;
-use App\Models\materia;
-use App\Models\menu;
-use App\Models\smt;
-use App\Models\materiaDocente;
-use App\Models\periodoAcademico;
+use App\Models\Estudiante;
+use App\Models\Docente;
+use App\Models\Diastutoria;
+use App\Models\Reserva;
+use App\Models\Materia;
+use App\Models\Menu;
+use App\Models\Smt;
+use App\Models\MateriaDocente;
+use App\Models\PeriodoAcademico;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
@@ -152,9 +152,8 @@ class UsuarioController extends Controller
                 $clave = sha1($data["clave"] . "unl.");
                 $usuario = Usuario::where("correo", "=", $data["correo"])
                     ->where("clave", "=", $clave)
-
                     ->where("estado", 1)->first();
-                dd($usario);
+
                 if ($usuario) {
                     if ($usuario->tipoUsuario == 2)
                     {
@@ -277,7 +276,6 @@ class UsuarioController extends Controller
 
         $listas = usuario::where("tipoUsuario", 2)
                             ->where("estado", "<", 2)
-
                             ->get();
 
         foreach ($listas as $lista) {
@@ -309,7 +307,6 @@ class UsuarioController extends Controller
 
         $listas = usuario::where("tipoUsuario", 1)
                             ->where("estado", "<", 2)
-
                             ->get();
 
         foreach ($listas as $lista) {

@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-use App\Models\asistencia;
-use App\Models\estudiante;
-use App\Models\docente;
-use App\Models\materia;
-use App\Models\periodoAcademico;
-use App\Models\reserva;
+use App\Models\Asistencia;
+use App\Models\Estudiante;
+use App\Models\Docente;
+use App\Models\Materia;
+use App\Models\PeriodoAcademico;
+use App\Models\Reserva;
 
 // use PHPMailer\PHPMailer;
 // require 'PHPMailer/vendor/autoload.php';

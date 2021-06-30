@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\docente;
-use App\Models\diastutoria;
-use App\Models\horatutoria;
-use App\Models\materia;
-use App\Models\materiaDocente;
-use App\Models\periodoAcademico;
-use App\Models\reserva;
+use App\Models\Docente;
+use App\Models\Diastutoria;
+use App\Models\Horatutoria;
+use App\Models\Materia;
+use App\Models\MateriaDocente;
+use App\Models\PeriodoAcademico;
+use App\Models\Reserva;
 use Illuminate\Http\Request;
 
 
