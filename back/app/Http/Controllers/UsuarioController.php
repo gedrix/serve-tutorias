@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\usuario;
+use App\Models\Usuario;
 use App\Models\estudiante;
 use App\Models\docente;
 use App\Models\diastutoria;
@@ -150,7 +150,7 @@ class UsuarioController extends Controller
             try {
                 $data = $request->json()->all();
                 $clave = sha1($data["clave"] . "unl.");
-                $usuario = usuario::where("correo", "=", $data["correo"])
+                $usuario = Usuario::where("correo", "=", $data["correo"])
                     ->where("clave", "=", $clave)
 
                     ->where("estado", 1)->first();
@@ -191,7 +191,7 @@ class UsuarioController extends Controller
                     self::estadoJson(400, false, 'Datos Incorrectos');
                 }
             } catch (\Exception $e) {
-                self::estadoJson(400, false, 'Datos Incorrectos');
+                self::estadoJson(400, false, $e);
             }
             return response()->json($datos, $estado);
         }
@@ -211,7 +211,7 @@ class UsuarioController extends Controller
         }
         return $data;
     }
-    
+
     //DATOS PERFIL ESTUDIANTE
     public function datosEstudiante($external_id)
     {
@@ -268,7 +268,7 @@ class UsuarioController extends Controller
         }
         return response()->json($datos, $estado);
     }
-    
+
     //listar usuario - estudiante
     public function listaUsuarioEstudiante()
     {
@@ -311,7 +311,7 @@ class UsuarioController extends Controller
                             ->where("estado", "<", 2)
 
                             ->get();
-        
+
         foreach ($listas as $lista) {
             $datos['data'][] = [
                 "Correo" => $lista->correo,
@@ -331,7 +331,7 @@ class UsuarioController extends Controller
                   return true;
                 }else{
                     return false;
-                }   
+                }
         }else{
             $docente = docente::where("id_usuario", $id)->first();
             if ($docente) {
@@ -340,7 +340,7 @@ class UsuarioController extends Controller
                 return false;
             }
         }
-        
+
     }
 
     private function nombredocente($id)
@@ -387,7 +387,7 @@ class UsuarioController extends Controller
         return response()->json($datos, $estado);
 
     }
-    
+
     public function listarDocentes()
     {
         global $estado, $datos;
@@ -408,7 +408,7 @@ class UsuarioController extends Controller
         return response()->json($datos, $estado);
 
     }
-   
+
     //listar compañeros de un curso
      public function listarEstudiantesCurso($external_id)
      {
@@ -416,11 +416,11 @@ class UsuarioController extends Controller
         self::iniciarObjetoJSon();
         $estudianteobj = estudiante::where("external_es",  $external_id)->first();
 
-        if ($estudianteobj) 
+        if ($estudianteobj)
         {
             $estudiante = estudiante::where("ciclo", $estudianteobj->ciclo)
                                     ->where("paralelo", $estudianteobj->paralelo)->get();
-            
+
             foreach ($estudiante as $est) {
                 $datos['data'][] = [
                 "nombres" => $est->nombres,
@@ -433,7 +433,7 @@ class UsuarioController extends Controller
             self::estadoJson(400, false, 'Datos Incorrectos');
         }
         return response()->json($datos, $estado);
-     }   
+     }
 
 
     public function registrarSmt(Request  $request)
