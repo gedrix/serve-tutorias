@@ -154,7 +154,7 @@ class UsuarioController extends Controller
                     ->where("clave", "=", $clave)
 
                     ->where("estado", 1)->first();
-
+                dd($usario);
                 if ($usuario) {
                     if ($usuario->tipoUsuario == 2)
                     {
