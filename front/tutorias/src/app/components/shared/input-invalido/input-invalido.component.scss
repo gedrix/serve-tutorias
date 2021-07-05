@@ -1,0 +1,11 @@
+.p-invalid{
+  height: .85rem;
+  width: 100%;
+  font-size: .75em;
+  color: red;
+}
+:host ::ng-deep{
+  .invalid-feedback>p{
+    margin: 0px !important;
+  }
+}

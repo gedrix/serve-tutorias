@@ -1,0 +1,19 @@
+:host ::ng-deep {
+
+  .ng-star-inserted>.p-disabled{
+    color: rgba(128, 128, 128, 0.301) !important;
+  }
+  .p-datepicker {
+    background: #8080800d !important;
+  }
+  .ng-star-inserted>.p-ripple{
+    color: rgb(33, 66, 109);
+    font-weight: bolder;
+  }
+  li>.ng-star-inserted{
+    color: #495057;
+    font-weight: normal;
+  }
+
+}
+

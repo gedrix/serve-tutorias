@@ -1,0 +1,56 @@
+<p-panel header="Tutorías Reagendadas">
+  <!-- tabla para ver citas reagendadas -->
+  <p-table *ngIf="!mostrarFomularioCancelacion" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"  urrentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50]"
+   [value]="lista" #dt1 [globalFilterFields]="['nombresDocente','fecha','horaInicio','temaTutoria']"
+    styleClass="p-datatable-responsive-demo">
+    <ng-template pTemplate="caption">
+      <div class="p-d-flex">
+        <span class="p-input-icon-left p-ml-auto">
+          <i class="pi pi-search"></i>
+          <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+            placeholder="Búsqueda" />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr style="font-size: 16px;">
+        <th>Docente</th>
+        <th>Fecha</th>
+        <th>Hora Inicio</th>
+        <th>Tema</th>
+        <th>Opción</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
+      <tr style="font-size: 15px;">
+        <td>{{producto.nombresDocente}}</td>
+        <td>{{producto.fecha}}</td>
+        <td>{{producto.horaInicio}}</td>
+        <td>{{producto.temaTutoria}}</td>
+        <td>
+          <button pButton pRipple type="button" icon="pi pi-thumbs-up" class="p-button-rounded p-button-info p-mr-2"
+            (click)="aceptarReagendacion(rowIndex)"></button>
+          <button pButton pRipple type="button" icon="pi pi-thumbs-down" class="p-button-rounded p-button-danger"
+            (click)="cancelarReagendacion(rowIndex)"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- cancelar la reserva -->
+  <div class="p-col-10 p-offset-1 p-sm-4 p-sm-offset-4 p-grid" *ngIf="mostrarFomularioCancelacion">
+    <div class="p-col-12 p-fluid">
+      <div class="p-field" [formGroup]="formularioCancelacion">
+        <label for="motivo"><b style="font-size: 16px;">¿Por qué desea cancelar la reagendación que realizó el docente?</b><br><br></label>
+        <textarea pInputTextarea id="motivo" [rows]="5" [cols]="15" autoResize="autoResize"
+          formControlName="motivo"></textarea>
+        <input-invalido nombreControlError="motivo"></input-invalido>
+      </div>
+    </div>
+    <div class="p-col-12 p-d-flex p-jc-center">
+      <div class="p-mr-2"><button pButton pRipple type="button" label="Guardar" (click)="guardarCancelacion()"></button></div>
+      <div><button pButton pRipple type="button" label="Cancelar" class="p-button-danger"
+          (click)="cancelarEnvio()"></button></div>
+    </div>
+  </div>
+</p-panel>

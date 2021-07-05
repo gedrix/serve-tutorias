@@ -1,0 +1,53 @@
+<p-panel>
+  <ng-template pTemplate="header">
+      <b style="font-size:19px">Solicitar Reserva</b>
+  </ng-template>
+  <div class="p-grid" [formGroup]="formReserva">
+    <div class="p-col-12 p-sm-6 p-md-7">
+      <div class="p-fluid">
+        <div class="p-field">
+          <label for="docente" >Docente</label>
+          <p-dropdown [options]="listaDocentes" inputId="docente" formControlName="docente" optionLabel="name" [filter]="true" filterBy="name" [showClear]="true" placeholder="Escoge una opción"></p-dropdown>
+          <input-invalido nombreControlError="docente"></input-invalido>
+        </div>
+        <div class="p-field" *ngIf="formReserva?.get('horaTutoria').value?.tipo_tutoria != 1">
+          <label for="materia">Materia</label>
+          <p-dropdown [options]="listaMaterias" inputId="materia" formControlName="materia" placeholder="Escoge una opción" optionLabel="name" *ngIf="listaMaterias && (listaMaterias.length == 0 || listaMaterias.length>1)"></p-dropdown>
+          <input id="horaInicio" type="text" value="{{formReserva.get('materia').value?.name}}" pInputText readonly *ngIf="listaMaterias == null">
+          <input-invalido nombreControlError="materia"></input-invalido>
+        </div>
+        <div class="p-field">
+          <label for="participantes">Participantes</label>
+          <p-multiSelect [options]="listaEstudiantes" inputId="participantes" defaultLabel="Selecciona participantes" optionLabel="name" filter="true" filterBy="name" display="chip" formControlName="participantes"></p-multiSelect>
+          <input-invalido nombreControlError="participantes"></input-invalido>
+        </div>
+        <div class="p-field">
+          <label for="motivo">{{formReserva.get('horaTutoria').value && formReserva.get('horaTutoria').value?.tipo_tutoria ==1 ? ' ¿Cúal es el tema de su tesis?':'¿Cúal es el motivo de la tutoría?'}} </label>
+          <!--  -->
+          <textarea pInputTextarea id="motivo" [rows]="5" [cols]="15" autoResize="autoResize" formControlName="motivo"></textarea>
+          <input-invalido nombreControlError="motivo"></input-invalido>
+        </div>
+        <div class="p-field">
+          <label for="tipoTutoria">Tipo tutoría</label>
+          <div class="p-grid p-pt-0">
+            <ng-container *ngFor="let item of listaHoras;let i = index">
+              <div class="p-col-12" *ngIf="item.disponible">
+                <p-radioButton inputId="tipoTutoria"  [value]="item" label=" {{!item.tipo_tutoria?'Académica':'Titulación'}} - {{item.hora_inicio}}"
+                formControlName="horaTutoria">
+                </p-radioButton>
+              </div>
+            </ng-container>
+          </div>
+          <input-invalido nombreControlError="horaTutoria"></input-invalido>
+        </div>
+      </div>
+    </div>
+    <div class="p-col-12 p-sm-6 p-md-5 p-d-flex p-jc-center">
+      <p-calendar [inline]="true" formControlName="fecha" [disabledDays]="diasDesabilitados" [disabledDates]="fechasDeshabilitadas" [readonlyInput]="true" [locale]="es"></p-calendar>
+      <input-invalido nombreControlError="fecha"></input-invalido>
+    </div>
+  </div>
+  <div class="p-d-flex p-jc-center">
+    <button pButton type="button" icon="pi pi-send" label="Reservar" (click)="solicitarReserva()"></button>
+  </div>
+</p-panel>

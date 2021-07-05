@@ -1,0 +1,145 @@
+<p-panel header="Tutorías Reservadas">
+  <div class="p-grid">
+
+    <!-- tabla para verservas -->
+    <p-table *ngIf="!mostrarFomularioCancelacion" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"  urrentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowsPerPageOptions]="[10,25,50]"
+    [value]="lista" #dt1
+      [globalFilterFields]="['nombresDocente','fecha','hora','temaTutoria']" styleClass="p-datatable-responsive-demo">
+      <ng-template pTemplate="caption">
+        <div class="p-d-flex">
+          <button pButton pRipple label="Evaluar" icon="pi pi-book" class="p-button-raised"
+            (click)="mostrarReservasAEvaluar()" *ngIf="!vistaEvaluarTutorias"></button>
+          <button pButton pRipple label="Lista Reservados" icon="pi pi-book" class="p-button-outlined"
+            (click)="mostrarListaReservas()" *ngIf="vistaEvaluarTutorias"></button>
+          <span class="p-input-icon-left p-ml-auto">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+              placeholder="Búsqueda" />
+          </span>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr style="font-size: 16px;">
+          <th>Docente</th>
+          <th>Modalidad</th>
+          <th>Fecha Tutoría</th>
+          <th>Hora Tutoría</th>
+          <th>Tema</th>
+          <th>Opción</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-producto let-rowIndex="rowIndex">
+        <tr style="font-size: 15px;">
+          <td>{{producto.nombresDocente}}</td>
+          <td >{{producto.modalidad==1?'Individual':'Grupal'}}</td>
+          <td>{{producto.fecha}}</td>
+          <td>{{producto.hora}}</td>
+          <td>{{producto.temaTutoria}}</td>
+          <td>
+            <button pButton pRipple type="button" icon="pi pi-trash" class="p-button-rounded p-button-danger"
+              (click)="cancelarReservacion(rowIndex)" *ngIf="!vistaEvaluarTutorias"></button>
+            <button pButton pRipple type="button" icon="pi pi-pencil" class="p-button-rounded p-button-info"
+              (click)="presentarFormularioEvaluacion(rowIndex)" *ngIf="vistaEvaluarTutorias"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <!-- cancelar la reserva -->
+    <div class="p-col-10 p-offset-1 p-sm-4 p-sm-offset-4 p-grid" *ngIf="mostrarFomularioCancelacion == 1">
+      <div class="p-col-12 p-fluid">
+        <div class="p-field" [formGroup]="formularioCancelacion">
+          <label for="motivo"><b style="font-size: 16px;">¿Por qué desea cancelar la tutoría reservada?</b><br><br></label>
+          <textarea pInputTextarea id="motivo" [rows]="5" [cols]="15" autoResize="autoResize"
+            formControlName="motivo"></textarea>
+          <input-invalido nombreControlError="motivo"></input-invalido>
+        </div>
+      </div>
+      <div class="p-col-12 p-d-flex p-jc-center">
+        <div class="p-mr-2"><button pButton pRipple type="button" label="Guardar" (click)="guardar()"></button></div>
+        <div><button pButton pRipple type="button" label="Cancelar" class="p-button-danger"
+            (click)="cancelarEnvio()"></button></div>
+      </div>
+    </div>
+
+    <!-- evaluar reserva -->
+    <div class="p-col-10 p-offset-1 p-sm-8 p-sm-offset-2 p-md-8 p-md-offset-2" *ngIf="mostrarFomularioCancelacion == 2">
+      <p-panel>
+        <ng-template pTemplate="header">
+          <div class="p-d-flex p-jc-center">
+            <div class="p-text-center p-text-bold" style="font-size: 15px;">Encuesta de satisfacción</div>
+          </div>
+        </ng-template>
+        <div class="p-fluid" [formGroup]="formularioEncuesta">
+          <div class="p-field">
+            <label for="dudasAclaradas" style="font-weight: 500;">¿La tutoría brindada por el docente aclaró sus dudas?</label>
+            <div class="p-grid" style="margin-top: 1.5px;">
+              <div class="p-col-6">
+                <p-radioButton inputId="dudasAclaradas" [value]="1" label="Si" formControlName="dudasAclaradas">
+                </p-radioButton>
+              </div>
+              <div class="p-col-6">
+                <p-radioButton inputId="dudasAclaradas" [value]="0" label="No" formControlName="dudasAclaradas">
+                </p-radioButton>
+              </div>
+            </div>
+            <input-invalido nombreControlError="dudasAclaradas"></input-invalido>
+          </div>
+          <div class="p-field">
+            <label for="satisfaccion" style="font-weight: 500;">Valore la satisfacción de la tutoría</label>
+            <div class="p-grid" style="margin-top: 1.5px;">
+              <div class="p-col-6 p-md-3 p-xl-3">
+                <p-radioButton inputId="satisfaccion" [value]="0" label="Malo" formControlName="satisfaccion">
+                </p-radioButton>
+              </div>
+              <div class="p-col-6 p-md-3 p-xl-2">
+                <p-radioButton inputId="satisfaccion" [value]="1" label="Regular" formControlName="satisfaccion">
+                </p-radioButton>
+              </div>
+              <div class="p-col-6 p-md-3 p-xl-2">
+                <p-radioButton inputId="satisfaccion" [value]="2" label="Bueno" formControlName="satisfaccion">
+                </p-radioButton>
+              </div>
+              <div class="p-col-6 p-md-3 p-xl-3">
+                <p-radioButton inputId="satisfaccion" [value]="3" label="Muy Bueno" formControlName="satisfaccion">
+                </p-radioButton>
+              </div>
+              <div class="p-col-6 p-md-3 p-xl-2">
+                <p-radioButton inputId="satisfaccion" [value]="4" label="Excelente" formControlName="satisfaccion">
+                </p-radioButton>
+              </div>
+            </div>
+            <input-invalido nombreControlError="satisfaccion"></input-invalido>
+          </div>
+          <div class="p-field">
+            <label for="tiempoNecesario" style="font-weight: 500;">¿ El tiempo que el docente le brindó fue el adecuado ?</label>
+            <div class="p-grid" style="margin-top: 1.5px;">
+              <div class="p-col-6">
+                <p-radioButton inputId="tiempoNecesario" [value]="1" label="Si" formControlName="tiempoNecesario">
+                </p-radioButton>
+              </div>
+              <div class="p-col-6">
+                <p-radioButton inputId="tiempoNecesario" [value]="0" label="No" formControlName="tiempoNecesario">
+                </p-radioButton>
+              </div>
+            </div>
+            <input-invalido nombreControlError="tiempoNecesario"></input-invalido>
+          </div>
+          <div class="p-field">
+            <label for="observacion" style="font-weight: 500;">Escriba una observación para el docente</label>
+            <textarea pInputTextarea id="observacion" [rows]="5" [cols]="15" autoResize="autoResize"
+              formControlName="observacion"></textarea>
+            <input-invalido nombreControlError="observacion"></input-invalido>
+          </div>
+        </div>
+        <div class="p-col-12 p-d-flex p-jc-center">
+          <div class="p-mr-2"><button pButton pRipple type="button" label="Guardar"
+              (click)="guardarEvaluacion()"></button></div>
+          <div><button pButton pRipple type="button" label="Cancelar" class="p-button-danger"
+              (click)="cancelarEnvio()"></button></div>
+        </div>
+      </p-panel>
+    </div>
+
+  </div>
+</p-panel>

@@ -1,0 +1,61 @@
+<p-panel header="Reportes">
+  <div class="p-fluid p-formgrid p-grid" [formGroup]="formFiltros">
+    <div class="p-col-12  p-grid p-fluid p-formgrid">
+      <div class="p-field p-col-12 p-md-3">
+        <label for="periodoAcademico">Periódo Académico</label>
+        <p-dropdown [options]="listaPeriodos" inputId="periodoAcademico" formControlName="periodoAcademico"
+          optionLabel="name" placeholder="Escoge una opción"></p-dropdown>
+      </div>
+      <div class="p-field p-col-12 p-md-3">
+        <label for="tiposReportes">Tipo Reporte</label>
+        <p-dropdown [options]="tiposReportes" inputId="tiposReportes" formControlName="tiposReportes" optionLabel="name"
+          placeholder="Escoge una opción"></p-dropdown>
+      </div>
+      <div class="p-field p-col-12 p-md-3" *ngIf="!formFiltros.get('tiposReportes').value || formFiltros.get('tiposReportes').value.code != 4">
+        <label for="materiaReporte">Materia</label>
+        <p-dropdown [options]="listaMaterias" inputId="materiaReporte" formControlName="materiaReporte" optionLabel="name"
+          placeholder="Escoge una opción"></p-dropdown>
+      </div>
+
+      <div class="p-field p-col-12 p-md-3" *ngIf="formFiltros.get('tiposReportes').value && formFiltros.get('tiposReportes').value.code == 4">
+        <label for="estudianteReporte" >Estudiante</label>
+        <p-dropdown [options]="listaEstudianteTitulacion" inputId="estudianteReporte" formControlName="estudianteReporte" optionLabel="name"
+          placeholder="Escoge una opción"></p-dropdown>
+      </div>
+
+      <div class="p-field p-col-12 p-md-3" *ngIf="!formFiltros.get('tiposReportes').value || formFiltros.get('tiposReportes').value.code != 4">
+        <label for="paraleloEstudiante" >Paralelo</label>
+        <p-dropdown [options]="paraleloEstudiante" inputId="paraleloEstudiante" formControlName="paraleloEstudiante" optionLabel="name"
+          placeholder="Escoge una opción"></p-dropdown>
+      </div>
+
+    </div>
+    <div class="p-field p-col-12 p-md-3 p-pt-md-4">
+      <button pButton pRipple type="button" label="Consultar" (click)="generarReporte()"></button>
+    </div>
+  </div>
+  <!-- <div class="p-grid">
+    <div class="p-col-12">
+      <p-table [value]="listaDatos" #pdfTable>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Hora Fin</th>
+            <th>Hora Inicio</th>
+            <th>Fecha</th>
+            <th>Modalidad</th>
+            <th>Tema Tutoria</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-product>
+          <tr>
+            <td>{{product.horaInicio}}</td>
+            <td>{{product.horaFin}}</td>
+            <td>{{product.fecha}}</td>
+            <td>{{product.modalidad==1?'Individual':'Grupal'}}</td>
+            <td>{{product.temaTutoria}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div> -->
+</p-panel>

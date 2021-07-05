@@ -1,0 +1,68 @@
+.inicio{
+  height:  100%;
+
+}
+.logo {
+  width: 270px;
+}
+.p-button.p-button-text:enabled:active {
+  background: rgb(0 123 255 / 0%) !important;
+}
+.colorF {
+  color: #070707 !important;
+  font-size: 20px !important;
+}
+.cabecera {
+  height: 75px;
+  padding: 0px;
+  // background: linear-gradient(to bottom, #1d3557, #ffffff00); //c5dbfa
+  background: linear-gradient(to bottom, #b6d1f7, #ffffff00);
+  // box-shadow: 0 3px 5px 0 rgb(0 0 0 / 15%);
+  // z-index: 1;
+  // overflow: hidden;
+  // position: fixed;
+  // top: 0;
+  // margin-left: 0rem;
+}
+
+.cuerpo {
+  width: 100%;
+}
+
+h1 {
+  color: #000000;
+  font-weight: bold;
+  font-size: 40px;
+  font-family: Arial;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow: 1px 1px 2px black;
+}
+
+:host ::ng-deep {
+  .p-card .p-card-body {
+    padding: 1rem;
+  }
+  .p-card-content {
+    padding: 0px;
+  }
+  .p-card {
+    background: #1d3557f7 !important;
+  }
+  .img-descrip {
+    height: 100%;
+    width: 100%;
+  }
+  .texto-descrip {
+    color: #fafafa !important;
+    text-align: right;
+    text-align: justify;
+    margin: auto;
+    font-size: 15px;
+  }
+  .img-modal {
+    height: 257px;
+    width: 100%;
+    cursor: pointer;
+  }
+}

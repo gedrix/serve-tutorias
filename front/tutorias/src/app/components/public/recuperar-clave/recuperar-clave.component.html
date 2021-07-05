@@ -1,0 +1,34 @@
+<div class="p-grid p-ai-center body">
+  <div class="fondo"></div>
+
+  <div class="p-col-10 p-offset-1 p-sm-8 p-sm-offset-2 p-md-4 p-md-offset-4 formulario">
+
+      <p-card>
+        <div class="p-grid">
+          <div class="p-col-12 p-pt-3">
+            <img src="assets/images/cisc.png" style="border-radius: 20px;  margin-left: 30%;">
+          </div>
+
+          <div [formGroup]="formRecuperar"  class="p-fluid">
+            <div class="p-field">
+              <label for="correo">Correo</label>
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                <input id="correo" type="text" formControlName="correo"  pInputText>
+              </div>
+              <input-invalido nombreControlError="correo"></input-invalido>
+            </div>
+
+          </div>
+          <div class="p-col-12 p-pl-0 p-pr-0">
+            <div class="p-d-flex p-jc-between">
+              <button pButton type="button" label="Recuperar" class=" p-mr-5 p-button-success" (click)="recuperar()"></button>
+              <button pButton pRipple type="button"  class="p-button-info boton-accion-cancelar" (click)="regresar()" label="Cancelar"></button>
+            </div>
+          </div>
+        </div>
+      </p-card>
+
+  </div>
+</div>
+
