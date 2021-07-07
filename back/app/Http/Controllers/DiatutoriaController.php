@@ -357,6 +357,7 @@ class DiatutoriaController extends Controller
                 ->groupBy("dia_tutoria");
             $materias = materiaDocente::where('id_docente', $docente->id)
                 ->join('materia', 'materia_docente.id_materia', 'materia.id')
+                ->where('materia_docente.estado', '1')
                 ->get();
 
             $arrayObjet = array();
