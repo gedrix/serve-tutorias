@@ -23,7 +23,7 @@ class MailController extends Controller{
                 $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
                 //$mail->Username   = 'gedrix.rm93@gmail.com';                     //Cuenta desde la que se va a enviar el correo
                 $mail->Username   = $mailObj->correo;                    //Cuenta desde la que se va a enviar el correo
-               // $mail->Password   = 'a0109j04.';                               //Contraseña desde la que se va a enviar el correo
+               // $mail->Password   = '';                               //Contraseña desde la que se va a enviar el correo
                 $mail->Password   = $mailObj->clave    ;                          //Contraseña desde la que se va a enviar el correo
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;         //Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
                 $mail->Port       = 587;                                    //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
