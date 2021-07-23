@@ -409,12 +409,11 @@ class UsuarioController extends Controller
         
             $parrafo="Su nueva contraseña es: <b>".$auxClave."</b>";
             $templateHtmlCorreo= $this->templateHtmlCorreo($correo,$parrafo);
-            $enviarCorreoBolean=
-                        $this->enviarCorreo($templateHtmlCorreo,$correo,
+            $enviarCorreoBolean= $this->enviarCorreo($templateHtmlCorreo,$correo,
                                             getenv("TITULO_RECUPERAR_PASSWORD")
                                             );
-            $enviar = new MailController();
-            $enviar->enviarMail($correo,  $asunto,  $mensaje);
+            //$enviar = new MailController();
+            //$enviar->enviarMail($correo,  $asunto,  $mensaje);
         self::estadoJson(200, true, '');
 
         return response()->json($datos, $estado);
