@@ -14,11 +14,11 @@ use App\Models\MateriaDocente;
 use App\Models\PeriodoAcademico;
 use Illuminate\Http\Request;
 
-use App\Traits\TemplateCorreo;
+//use App\Traits\TemplateCorreo;
 
 class UsuarioController extends Controller
 {
-    use TemplateCorreo;
+    //use TemplateCorreo;
     private $estado = 400;
     private $datos = [];
 
@@ -381,6 +381,8 @@ class UsuarioController extends Controller
 
         $usuarioObj->clave = $clave;
         $usuarioObj->save();
+         
+  
         self::estadoJson(200, true, '');
 
         return response()->json($datos, $estado);
@@ -402,18 +404,11 @@ class UsuarioController extends Controller
         $datos['data'] = [
             "clave aux" => $auxClave
         ];
-        
-            $correo = 'alfonso.rm1193@gmail.com';
-            //$asunto="Recuperar clave";
-            //$mensaje= "la nueva clave es ". $auxClave;
-        
-            $parrafo="Su nueva contraseña es: <b>".$auxClave."</b>";
-            $templateHtmlCorreo= $this->templateHtmlCorreo($correo,$parrafo);
-            $enviarCorreoBolean= $this->enviarCorreo($templateHtmlCorreo,$correo,
-                                            getenv("TITULO_RECUPERAR_PASSWORD")
-                                            );
-            //$enviar = new MailController();
-            //$enviar->enviarMail($correo,  $asunto,  $mensaje);
+ 
+  
+         $correo = "alfonso.rm1193@gmail.com";
+         $asunto="Nueva tutoria";
+         $mensaje= "su nueva clave es: ".$auxClave ." "." por favor se recomienda cambiar esta clave";
         self::estadoJson(200, true, '');
 
         return response()->json($datos, $estado);
