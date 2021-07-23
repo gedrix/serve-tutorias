@@ -18,7 +18,7 @@ trait TemplateCorreo {
                 <div class="card-body">
                     <img width="300"
                         height="100"
-                        src="'.getenv("LOGO_UNL").'" alt="UNl" />
+                        src="https://unl.edu.ec/sites/default/files/inline-images/logogris.png" alt="UNl" />
                     <div class="h6 text-muted mt-3">Universidad Nacional de Loja</div>
                     <h5 class=" mt-2"><b>CARRERA DE INGENIERÍA EN SISTEMAS (UNL) </b></h5>
                     <hr>
