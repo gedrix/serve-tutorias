@@ -22,7 +22,7 @@ class MailController extends Controller{
                 $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
                 $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
                 
-                $mail->Username   = 'cis.unl.tesus@gmail.com'                    //Cuenta desde la que se va a enviar el correo
+                $mail->Username   = 'cis.unl.tesis@gmail.com'                    //Cuenta desde la que se va a enviar el correo
                // $mail->Username   = $mailObj->correo;                    //Cuenta desde la que se va a enviar el correo
                 $mail->Password   = 'CisUnlTesis2021';                               //Contraseña desde la que se va a enviar el correo
                 //$mail->Password   = $mailObj->clave    ;                          //Contraseña desde la que se va a enviar el correo
@@ -32,7 +32,7 @@ class MailController extends Controller{
                 //$mail->Port       = $mailObj->puerto;                                  
 
                 //Recipients
-                $mail->setFrom('cis.unl.tesus@gmail.com', 'Modulo de tutorías');
+                $mail->setFrom('cis.unl.tesis@gmail.com', 'Modulo de tutorías');
                 $mail->addAddress($correo);               //Name is optional
 
                 //Content
