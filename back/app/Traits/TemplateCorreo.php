@@ -55,7 +55,7 @@ trait TemplateCorreo {
             </body>
       </html>';
     }
-    private function enviarCorreo($templateHtml,$para,$tituloCorreo){
+    public function enviarCorreo($templateHtml,$para,$tituloCorreo){
         try {
             $mail=new PHPMailer();
             $mail->CharSet='UTF-8';
