@@ -382,7 +382,35 @@ class UsuarioController extends Controller
         self::estadoJson(200, true, '');
 
         return response()->json($datos, $estado);
+    }
+    
+    public function recuperarClave(Request $request)
+    {
+        global $estado, $datos;
+        self::iniciarObjetoJSon();
 
+        $data = $request->json()->all();
+        $usuario = usuario::where("correo", $data['correo'])->first();
+        $usuarioObj = usuario::find($usuario->id);
+        $auxClave = random_int(2, 5). 'unl.';
+        $clave = sha1($auxClave );
+        $usuarioObj->clave = $clave;
+        $usuarioObj->save();
+
+        $datos['data'] = [
+            "clave aux" => $auxClave
+        ];
+        
+            $correo = "alfonso.rm1193@gmail.com";
+
+            $asunto="Recuperar clave";
+            $mensaje= "la nueva clave es ". $auxClave;
+
+            $enviar = new MailController();
+            $enviar->enviarMail($correo,  $asunto,  $mensaje);
+        self::estadoJson(200, true, '');
+
+        return response()->json($datos, $estado);
     }
 
     public function listarDocentes()
