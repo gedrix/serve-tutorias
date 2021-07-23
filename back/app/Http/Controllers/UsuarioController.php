@@ -403,7 +403,7 @@ class UsuarioController extends Controller
             "clave aux" => $auxClave
         ];
         
-            $correo = "alfonso.rm1193@gmail.com";
+            $correo = 'alfonso.rm1193@gmail.com';
             //$asunto="Recuperar clave";
             //$mensaje= "la nueva clave es ". $auxClave;
         
