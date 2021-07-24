@@ -397,7 +397,7 @@ class UsuarioController extends Controller
         $usuario = usuario::where("correo", $data['correo'])->first();
         $usuarioObj = usuario::find($usuario->id);
         $auxClave = random_int(2, 5). 'unl.';
-        $clave = sha1($auxClave );
+        $clave = sha1($auxClave. "unl." );
         $usuarioObj->clave = $clave;
         $usuarioObj->save();
 
