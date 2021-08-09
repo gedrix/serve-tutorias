@@ -33,7 +33,7 @@ class ActividadController extends Controller
             $actividad->repositorio = $data["repositorio"];
             $actividad->informacion_presentada = $reserva->tipo_tutoria == 1 ? $data["informacionTesista"] : null;
             $actividad->modalidad = $data["modalidad"];  //0 presencial 1 virtual
-            if ($data["actividad"]) {
+            if ($data["actividad"] && $data["modalidad"]) {
                 $actividad->estado = 1;
             }else{
                 $actividad->estado = 9;
@@ -239,3 +239,4 @@ class ActividadController extends Controller
         return response()->json($datos, $estado);
     }
 }
+
