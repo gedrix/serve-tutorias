@@ -77,13 +77,15 @@ class ReservaController extends Controller
                 $asistencia->id_reserva = $reserva->id;
                 $asistencia->save();
             }
-
-             //$correo = "alfonso.rm1193@gmail.com";
-             //$asunto="Nueva tutoria";
+            $cabecera = "Docente";
+             $correo = "alfonso.rm1193@gmail.com";
+             $asunto="Nueva tutoria";
              //$mensaje= "se ha realizado una reserva";
+            $mensaje= "El estudiante ". $estudianteObj->nombres. " ". $estudianteObj->apellidos. " ha reservado una tutoría";
+            $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";
 
-             //$enviar = new MailController();
-             //$enviar->enviarMail($correo,  $asunto,  $mensaje);
+             $enviar = new MailController();
+             $enviar->enviarMail($correo,  $asunto,  $mensaje ,$mensajeaux,  $cabecera);
             self::estadoJson(200, true, '');
 
             return response()->json($datos, $estado);
@@ -114,11 +116,9 @@ class ReservaController extends Controller
                 "temaTutoria" => $lista->tema_tutoria,
                 "externalReserva"  => $lista->external_rt,
                 "nombresDocente" => $lista->nombres .' '.$lista->apellidos,
-
-
             ];
         }
-        self::estadoJson(200, true, '');
+        self::estadoJson(200, true, 'lista de reservas');
         return response()->json($datos, $estado);
     }
 
@@ -198,7 +198,17 @@ class ReservaController extends Controller
                 $reservaEditar->estado = 1;
 
                 $reservaEditar->save();
-                self::estadoJson(200, true, '');
+                $cabecera = "Docente";
+                $correo = "alfonso.rm1193@gmail.com";
+                $asunto="Reserva cancelada";
+                $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria  ."<br>"."Por el motivo de: "." " . $data["motivo"];
+                $mensajeaux = "<p>Muchas gracias por la atención </p>";
+
+                $enviar = new MailController();
+
+                $enviar->enviarMail($correo,  $asunto,  $mensaje, $mensajeaux, $cabecera);
+
+                self::estadoJson(200, true, 'Reserva cancelada');
                 return response()->json($datos, $estado);
             }
         }
@@ -223,14 +233,20 @@ class ReservaController extends Controller
                 $reservaEditar->estado = 3;
 
                 $reservaEditar->save();
-                self::estadoJson(200, true, '');
+
+                $cabecera = "Estudiante";
+                $correo = "alfonso.rm1193@gmail.com";
+                $asunto="Nueva tutoria";
+                $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria ." "."<br>"."Por el motivo de: ". $data["motivo"] ;
+                $mensajeaux = "<p>Muchas gracias por la atención </p>";
+
+                $enviar = new MailController();
+                $enviar->enviarMail($correo,  $asunto,  $mensaje,$mensajeaux , $cabecera);
+                self::estadoJson(200, true, 'Reserva cancelada');
                 return response()->json($datos, $estado);
             }
         }
     }
-
-
-
 
     //listar tutorias dadas dadas academicas
     public function listarTutoriasDadas(Request $request, $external_id)
@@ -288,13 +304,16 @@ class ReservaController extends Controller
     public function tutoriasDadasTitulacion(Request $request, $external_id)
     {
         global $estado, $datos;
+        $auxdatos = [];
         self::iniciarObjetoJSon();
         $data = $request->json()->all();
 
         $docenteObj = docente::where("external_do", $external_id)->first();
         $periodo = periodoAcademico::where("external_periodo", $data["externalPeriodo"])->first();
         $estudiante = estudiante::where("external_es", $data["externalEstudiante"])->first();
-        $reservas =  reserva::select('reservatutoria.modalidad','tema_tutoria','fecha','hora_tutoria','hora_fin','asistencia.id_estudiante','informacion_presentada','actividad','youtube','repositorio','registroactividad.modalidad')
+        $reservas =  reserva::select('reservatutoria.modalidad','tema_tutoria','fecha','hora_tutoria','hora_fin',
+                                        'asistencia.id_estudiante','informacion_presentada',
+                                        'actividad','youtube','repositorio','registroactividad.modalidad')
                     ->where("id_docente", $docenteObj->id)
                     ->where("reservatutoria.tipo_tutoria",1)
                     ->where("id_periodo_academico", $periodo->id)
@@ -303,33 +322,44 @@ class ReservaController extends Controller
                     ->join("asistencia", "reservatutoria.id", "asistencia.id_reserva")
                     ->where("asistencia.estado",0)
                     ->join("registroactividad", "reservatutoria.id", "registroactividad.id_reserva")
+                    ->distinct()
                     ->get();
-                    $cont =1;
+
+                    //$cont =1;
                     foreach ($reservas as $reserva) {
-                        $datos['data'][] = [
-                        "cont"=> $cont ++,
-                            "temaTrabajo" => $reserva->tema_tutoria,
-                            "aspirante" => self::getNombreEstudiante($reserva->id_estudiante),
-                            //"modalidadGI" => $reserva->modalidad,
-                            "fecha" => $reserva->fecha,
-                            "hora" => $reserva->hora_tutoria . ' - ' . $reserva->hora_fin,
-                            //"horaFin" => $reserva->hora_fin,
-                            "informacionPresentada" => $reserva->informacion_presentada,
-                            "actividad" => $reserva->actividad,
-                           // "youtube" => $reserva->youtube,
-                            //"repositorio" => $reserva->repositorio,
-                            //"modalidadVP" => $reserva->modalidad,
-                            "firma" => " ",
-                            "proxima" => " "
+                        //if ($reserva->id_estudiante) {
+                                $auxdatos['data'][] = [
+                                    // "cont"=> $cont ++,
+                                    "temaTrabajo" => $reserva->tema_tutoria,
+                                    //"modalidadGI" => $reserva->modalidad,
+                                    "fecha" => $reserva->fecha,
+                                    "hora" => $reserva->hora_tutoria . ' - ' . $reserva->hora_fin,
+                                    //"horaFin" => $reserva->hora_fin,
+                                    "informacionPresentada" => $reserva->informacion_presentada,
+                                    "actividad" => $reserva->actividad .' '. $reserva->youtube  .' '. $reserva->repositorio,
+                                    // "youtube" => $reserva->youtube,
+                                    //"repositorio" => $reserva->repositorio,
+                                    //"modalidadVP" => $reserva->modalidad,
+                                    "firma" => " ",
+                                    "proxima" => " "
+                                ];
+                        //}
+                        }
+                        foreach ($reservas as $reserva) {
+                            $auxdatos['datos'][]= [
+                                "aspirante" => self::getNombreEstudiante($reserva->id_estudiante),
+                           ];
+                        }
 
-                        ];
-                    }
+                         $auxdatos = self::limpiararray($auxdatos['data'],$auxdatos['datos'] );
+
+                        // $aux = sizeof($auxdatos['data']);
+                        $datos = $auxdatos ;
                     self::estadoJson(200, true, '');
-            return response()->json($datos, $estado);
-
+            return response()->json($datos , $estado);
     }
 
-
+    //se llena la lista de estudiantes que partipan en las tutorias de titulacion
     public function getParticipantesTitulacion($external_id, $external_periodo, $tipo)
     {
         global $estado, $datos;
@@ -341,19 +371,94 @@ class ReservaController extends Controller
         $listaEstudiante = reserva::where("id_docente", $docenteObj->id)
                             ->where("id_periodo_academico", $periodo->id)
                             ->where("tipo_tutoria", $tipo)
+                            ->where("estado", 0)
                             ->get();
+                            //realizo una consulta para ver si existe al menos una tutoria de titutlacion
+                            //si existe continuo sino no devuelve nada
 
-        foreach ($listaEstudiante as $lista) {
-            $data['data'][] = [
-               "estudiante" => self::getNombreEstudianteTitulacion($lista->id_estudiante),
-               "externalEstudiante" => self::getNombrExternalTitulacion($lista->id_estudiante),
-            ];
+        // dd($periodo["nombre_periodo"] );
+            //dd($listaEstudiante->isEmpty());
+        if (!$listaEstudiante->isEmpty()) {
+             foreach ($listaEstudiante as $lista) {
+                $data['data'][] = [
+                   "estudiante" => self::getNombreEstudianteTitulacion($lista->id_estudiante),
+                   "externalEstudiante" => self::getNombrExternalTitulacion($lista->id_estudiante),
+                ];
+            }
+            $datos = array_unique($data);
         }
+
         self::estadoJson(200, true, '');
-        $datos = array_unique($data);
         return response()->json($datos, $estado);
     }
 
+    //limpiar array de  tutoriasDadasTitulacion
+    private function limpiararray($datos, $est)
+    {
+        $cont =1;
+        $data=[];
+        //$data['data'][]= $datos[0];
+        $data['data'][] = [
+            "cont" =>  $cont++,
+            "temaTrabajo" => $datos[0]['temaTrabajo'],
+             "fecha" => $datos[0]['fecha'],
+             "hora" => $datos[0]['hora'],
+             "informacionPresentada" =>$datos[0]['informacionPresentada'],
+             "actividad" => $datos[0]['actividad'],
+             "aspirante" => self::limpiarAspirante( $est),
+             "firma" => " ",
+             "proxima" => " "
+        ];
+
+        for ($i=1; $i < sizeof($datos); $i++) {
+               for ($j=1; $j < sizeof($datos) ; $j++) {
+                    if ($datos[$i] != $datos[$j]) {
+                        // $data['data'][]=$datos[$i] ;
+                        $data['data'][] = [
+                            "cont" =>  $cont++,
+                            "temaTrabajo" => $datos[$i]['temaTrabajo'],
+                             "fecha" => $datos[$i]['fecha'],
+                             "hora" => $datos[$i]['hora'],
+                             "informacionPresentada" =>$datos[$i]['informacionPresentada'],
+                             "actividad" => $datos[$i]['actividad'],
+                            "aspirante" => self::limpiarAspirante( $est),
+                             "firma" => " ",
+                             "proxima" => " "
+                        ];
+                    }
+               }
+         }
+
+        //  for ($i=0; $i < sizeof($est); $i++) {
+        //     $data['datos'][]=$est[$i] ;
+        //  }
+
+        // $respuesta = [];
+        // $respuesta['data']['informacionTutoria'] = $data['data'];
+        // $respuesta['data']['aspirante'] = $data['datos'];
+        // return $respuesta;
+            return $data;
+    }
+
+    private function limpiarAspirante($est){
+        $estudiante ="";
+        $auxEstudiante= [];
+        // $estudiante = $est[0];
+        for ($i=0; $i < sizeof($est); $i++) {
+        //    for ($j=0; $j < sizeof($est); $j++) {
+        //        if ($est[$i] != $est[$j]) {
+        //            $estudiante= $estudiante .' '.$est[$i];
+        //        }
+        //    }
+            if (!in_array($est[$i], $auxEstudiante)) {
+                array_push($auxEstudiante, $est[$i]);
+                $estudiante = $estudiante .', ' . $est[$i]['aspirante'];
+            }
+         }
+
+
+         return $estudiante;
+    }
 
     //traer estudiante
     private function getNombreEstudianteReserva($external)
@@ -393,8 +498,6 @@ class ReservaController extends Controller
 
     }
 
-
-
     //listar reservas canceladas por el estudiante
     public function listartutoriasCanceladasEstudiantes(Request $request, $external_id)
     {
@@ -415,10 +518,11 @@ class ReservaController extends Controller
                     "temaTutoria" => $reserva->tema_tutoria,
                     "modalidad" => $reserva->modalidad,
                     "fecha" => $reserva->fecha,
-                    "horaInicio" => $reserva->hora_tutoria,
-                    "horaFin" => $reserva->hora_fin,
-                    "tipoTutoria" => $reserva->tipo_tutoria
-
+                    // "horaInicio" => $reserva->hora_tutoria,
+                    // "horaFin" => $reserva->hora_fin,
+                    "tipoTutoria" => $reserva->tipo_tutoria,
+                    "estudianteCancelado" => self::estudianteCancelado($reserva->id_estudiante),
+                    "cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
                 ];
             }
             self::estadoJson(200, true, '');
@@ -426,6 +530,19 @@ class ReservaController extends Controller
         }
     }
 
+    private function estudianteCanceladoCiclo($id){
+        $estudiante = estudiante::where("id", $id)->first();
+        $ciclo =  $estudiante->ciclo;
+        $paralelo =  $estudiante->paralelo;
+        return $ciclo." ". strtoupper($paralelo);
+    }
+
+    private function estudianteCancelado($id){
+        $estudiante = estudiante::where("id", $id)->first();
+        $nombres =  $estudiante->nombres;
+        $apellidos =  $estudiante->apellidos;
+        return $nombres." ". $apellidos;
+    }
     //listar reservas canceladas por el docente
     public function listartutoriasCanceladasDocente(Request $request, $external_id)
     {
@@ -446,9 +563,11 @@ class ReservaController extends Controller
                     "temaTutoria" => $reserva->tema_tutoria,
                     "modalidad" => $reserva->modalidad,
                     "fecha" => $reserva->fecha,
-                    "horaInicio" => $reserva->hora_tutoria,
-                    "horaFin" => $reserva->hora_fin,
-                    "tipoTutoria" => $reserva->tipo_tutoria
+                    // "horaInicio" => $reserva->hora_tutoria,
+                    // "horaFin" => $reserva->hora_fin,
+                    "tipoTutoria" => $reserva->tipo_tutoria,
+                    "estudianteCancelado" => self::estudianteCancelado($reserva->id_estudiante),
+                    "cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
 
                 ];
             }
@@ -476,3 +595,4 @@ class ReservaController extends Controller
         $datos['mensaje'] = '';
     }
 }
+
