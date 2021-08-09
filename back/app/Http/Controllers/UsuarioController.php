@@ -14,27 +14,26 @@ use App\Models\MateriaDocente;
 use App\Models\PeriodoAcademico;
 use Illuminate\Http\Request;
 
-//use App\Traits\TemplateCorreo;
-
 class UsuarioController extends Controller
 {
-    //use TemplateCorreo;
+
     private $estado = 400;
     private $datos = [];
 
     //REGISTRO DE USUARIO
     public function RegistrarUsuario(Request $request)
     {
-          global $estado, $datos;
+        global $estado, $datos;
         self::iniciarObjetoJSon();
 
         if ($request->json()) {
             $data = $request->json()->all();
 
-            $usuario = usuario::where("correo", $data["correo"])->first();
+            $usuario = usuario::where("correo", $data["correo"])->first(); //verifico que si hay un campo con ese correo
             if (!$usuario) {
                 $usuario = new usuario();
                 $usuario->correo = $data["correo"];
+
                 $clave = sha1($data["clave"] . "unl.");
                 $usuario->clave = $clave;
                 $usuario->tipoUsuario = $data["tipo"];  //1 docente 2 estudiante
@@ -148,10 +147,12 @@ class UsuarioController extends Controller
         $datos['data'] = null;
         $datos['sucess'] = 'false';
         $datos['mensaje'] = '';
+
         if ($request->json()) {
             try {
                 $data = $request->json()->all();
                 $clave = sha1($data["clave"] . "unl.");
+
                 $usuario = Usuario::where("correo", "=", $data["correo"])
                     ->where("clave", "=", $clave)
                     ->where("estado", 1)->first();
@@ -187,7 +188,9 @@ class UsuarioController extends Controller
 
                         ];
                     }
-                    self::estadoJson(200, true, '');
+                    //self::estadoJson(200, true, '');
+                    self::estadoJson(200, true, 'Inicio de sesión correcto');
+
                 } else {
                     self::estadoJson(400, false, 'Datos Incorrectos');
                 }
@@ -235,7 +238,7 @@ class UsuarioController extends Controller
                 ];
                 self::estadoJson(200, true, '');
             } else {
-                self::estadoJson(200, true, 'Estudiante no existente');
+                self::estadoJson(200, true, '');
             }
         }else{
                 self::estadoJson(400, false, 'Datos Incorrectos');
@@ -262,7 +265,7 @@ class UsuarioController extends Controller
             ];
             self::estadoJson(200, true, '');
             }{
-                self::estadoJson(200, true, 'Estudiante no existente');
+                self::estadoJson(200, true, '');
             }
         } else {
             self::estadoJson(200, true, 'Datos Incorrectos');
@@ -381,13 +384,11 @@ class UsuarioController extends Controller
 
         $usuarioObj->clave = $clave;
         $usuarioObj->save();
-         
-  
-        self::estadoJson(200, true, '');
+        self::estadoJson(200, true, 'exitoso');
 
         return response()->json($datos, $estado);
+
     }
-    
     public function recuperarClave(Request $request)
     {
         global $estado, $datos;
@@ -397,19 +398,21 @@ class UsuarioController extends Controller
         $usuario = usuario::where("correo", $data['correo'])->first();
         $usuarioObj = usuario::find($usuario->id);
         $auxClave = random_int(2, 5). 'unl.';
-        $clave = sha1($auxClave. "unl." );
+        $clave = sha1($auxClave . "unl.") ;
         $usuarioObj->clave = $clave;
         $usuarioObj->save();
 
-        $datos['data'] = [
-            "clave aux" => $auxClave
-        ];
- 
-  
-         $correo = "alfonso.rm1193@gmail.com";
-         $asunto="Nueva tutoria";
-         $mensaje= "su nueva clave es: ".$auxClave ." "." por favor se recomienda cambiar esta clave";
-        self::estadoJson(200, true, '');
+        // $datos['data'] = [
+        //     "clave aux" => $auxClave
+        // ];
+             $cabecera = "Usuario";
+            $correo = "alfonso.rm1193@gmail.com";
+             $asunto="Recuperar clave";
+             $mensaje= "su nueva clave es: ".$auxClave;
+             $mensajeaux = "<p>su clave se cambió con exito, se recomienda cambiar la clave </p>";
+             $enviar = new MailController();
+             $enviar->enviarMail($correo,  $asunto,  $mensaje,$mensajeaux,  $cabecera);
+        self::estadoJson(200, true, 'revise su correo');
 
         return response()->json($datos, $estado);
     }
@@ -472,12 +475,12 @@ class UsuarioController extends Controller
             $smt = new smt();
 
             $smt->correo = $data["correo"];
-            $clave = sha1($data["clave"] . "unl.");
-            $smt->clave = $clave;
+            //$clave = sha1($data["clave"] . "unl.");
+            $smt->clave = $data["clave"];
             $smt->estado=1;
             $smt->external_smt = "Smt". Utilidades\UUID::v4();
             $smt->save();
-            self::estadoJson(200, true, '');
+            self::estadoJson(200, true, 'exitoso');
         }else{
             self::estadoJson(400, false, 'Datos Incorrectos');
         }
@@ -506,12 +509,12 @@ class UsuarioController extends Controller
         $data = $request->json()->all();
         $editar = smt::where("external_smt", $data['externalSmt'])->first();
         $editarSmt = smt::find($editar->id);
-        $clave = sha1($data["clave"] . "unl.");
+       $clave = $data["clave"] ;
         $editarSmt->correo = $data['correo'] ? $data['correo']: $editar->correo;
         $editarSmt->clave = $data["clave"]? $clave: $editar->clave;
         $editarSmt->puerto = $data["puerto"];
         $editarSmt->save();
-        self::estadoJson(200, true, '');
+        self::estadoJson(200, true, 'Modificación exitosa');
         return response()->json($datos, $estado);
 
      }
@@ -533,3 +536,4 @@ class UsuarioController extends Controller
         $datos['mensaje'] = '';
     }
 }
+
