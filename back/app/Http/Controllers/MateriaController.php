@@ -29,6 +29,7 @@ class MateriaController extends Controller
             return response()->json(["mensaje" => "Operacion existosa", "siglas" => "OE"], 200);
         }
     }
+
     public function listarMaterias()
     {
         global $estado, $datos;
@@ -69,7 +70,7 @@ class MateriaController extends Controller
                     $materiaDocente->external_md = "Md" . Utilidades\UUID::v4();
                     $materiaDocente->save();
 
-                    self::estadoJson(200, true, '');
+                    self::estadoJson(200, true, 'Registro exitoso');
 
                     $datos['data'] = [
                         "externalMateriaDocente" => $materiaDocente->external_md
@@ -96,7 +97,7 @@ class MateriaController extends Controller
         $materiaDocente = materiaDocente::find($editar->id);
         $materiaDocente->estado = 0;
         $materiaDocente->save();
-        self::estadoJson(200, true, '');
+        self::estadoJson(200, true, 'Materia Eliminada');
 
         return response()->json($datos, $estado);
     }
@@ -114,7 +115,7 @@ class MateriaController extends Controller
 
             $materiaDocente->id_materia = $materia->id;
             $materiaDocente->save();
-            self::estadoJson(200, true, '');
+            self::estadoJson(200, true, 'Materia modificada');
 
             return response()->json($datos, $estado);
         }
