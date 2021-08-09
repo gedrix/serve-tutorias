@@ -19,20 +19,38 @@ class DiatutoriaController extends Controller
 
 
     //registrar periodo
+    // public function registrarPeriodo(Request $request)
+    // {
+    //     if ($request->json()) {
+    //         $data = $request->json()->all();
+
+    //         $periodo =  new periodoAcademico();
+    //         $periodo->nombre_periodo = $data["nombrePeriodo"];
+    //         $periodo->fecha_inicio = $data["fechaInicio"];
+    //         $periodo->fecha_fin = $data["fechaFin"];
+    //         $periodo->estado = 1;
+    //         $periodo->external_periodo = "Pe" . Utilidades\UUID::v4();
+
+    //         $periodo->save();
+    //         return response()->json(["mensaje" => "Operacion existosa", "siglas" => "OE"], 200);
+    //     }
+    // }
+
     public function registrarPeriodo(Request $request)
     {
+        global $estado, $datos;
+        self::iniciarObjetoJSon();
         if ($request->json()) {
-            $data = $request->json()->all();
-
+            $data  = $request->json()->all();
             $periodo =  new periodoAcademico();
             $periodo->nombre_periodo = $data["nombrePeriodo"];
             $periodo->fecha_inicio = $data["fechaInicio"];
             $periodo->fecha_fin = $data["fechaFin"];
             $periodo->estado = 1;
             $periodo->external_periodo = "Pe" . Utilidades\UUID::v4();
-
             $periodo->save();
-            return response()->json(["mensaje" => "Operacion existosa", "siglas" => "OE"], 200);
+            self::estadoJson(200, true, '');
+            return response()->json($datos, $estado);
         }
     }
 
@@ -65,7 +83,7 @@ class DiatutoriaController extends Controller
 
         $periodoObj->estado = 0;
         $periodoObj->save();
-        self::estadoJson(200, true, '');
+        self::estadoJson(200, true, 'Periodo Eliminado');
         return response()->json($datos, $estado);
     }
 
@@ -81,7 +99,7 @@ class DiatutoriaController extends Controller
         $periodoObj->fecha_inicio = $data['fechaInicio'] ? $data['fechaInicio']: $periodo->fecha_inicio ;
         $periodoObj->fecha_fin = $data['fechaFin'] ? $data['fechaFin']: $periodo->fecha_fin ;
         $periodoObj->save();
-        self::estadoJson(200, true, '');
+        self::estadoJson(200, true, 'Actualizacion de periodo');
         return response()->json($datos, $estado);
     }
 
@@ -445,3 +463,4 @@ class DiatutoriaController extends Controller
         $datos['mensaje'] = '';
     }
 }
+
