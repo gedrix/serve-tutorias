@@ -44,8 +44,16 @@ class ReagendarController extends Controller
             //$reservaEditar = $data["mensaje"];
             $reservaEditar->save();
             //$cuerpoMensaje = $data["mensaje"];
+            $cabecera = "Estudiante";
+            $correo = "alfonso.rm1193@gmail.com";
+            $asunto="Tutoria reagendada";
+            $mensaje= "Se ha realizado una reagendación de tutoría respecto a: ". $reserva->tema_tutoria.",". " por los motivos de:  ". $data["mensaje"];
+            $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";
 
-            self::estadoJson(200, true, '');
+            $enviar = new MailController();
+            $enviar->enviarMail($correo,  $asunto,  $mensaje,$mensajeaux ,$cabecera);
+
+            self::estadoJson(200, true, 'cita reangendada');
             return response()->json($datos, $estado);
         }
     }
@@ -121,3 +129,4 @@ class ReagendarController extends Controller
         $datos['mensaje'] = '';
     }
 }
+
