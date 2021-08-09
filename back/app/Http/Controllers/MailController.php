@@ -11,7 +11,7 @@ require 'Utilidades/PHPMailer/vendor/autoload.php';
 class MailController extends Controller{
 
 
-    public function enviarMail($correo,  $asunto,  $mensaje){
+    public function enviarMail($correo,  $asunto,  $mensaje, $mensajeaux, $cabecera){
         $mail = new PHPMailer();
         $mailObj = smt::where("estado", 1)->first();
 
@@ -32,7 +32,7 @@ class MailController extends Controller{
                 //$mail->Port       = $mailObj->puerto;                                  
 
                 //Recipients
-                $mail->setFrom('cis.unl.tesis@gmail.com', 'Modulo de tutorías');
+                $mail->setFrom('cis.unl.tesis@gmail.com', 'Modulo de tutorias');
                 $mail->addAddress($correo);               //Name is optional
 
                 //Content
@@ -43,9 +43,10 @@ class MailController extends Controller{
                 <p style='margin:0px; padding:0px'>Universidad Nacional de Loja</p>
                 <h2 style='margin:0px; padding:0px; '>CARRERA DE INGENIERÍA EN SISTEMAS (UNL)</h2>
                 <hr>
-                <p>Estimado/a". "Docente"."</p> <p>".
-                $mensaje;
-                "</p> <p>Por favor, revise su perfil en el sistema web Comunidades Estudiantiles</p>
+                <p>Estimado/a ". $cabecera."</p> <p>".
+                $mensaje ." ".
+                "</p>" . $mensajeaux .""  .
+                "
                 <br>
                 <a style='text-decoration: none;color:#fafafa;border-radius: 10px;padding:1%;background-color: #071831;' href='https://comunidadesestudiantiles.000webhostapp.com/' target='_blanck'>Acceder</a>
                 <br><br>
