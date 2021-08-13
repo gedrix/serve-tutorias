@@ -154,6 +154,7 @@ class MateriaController extends Controller
             $periodo = periodoAcademico::where("external_periodo", $data["externalPeriodo"])->first();
             $materiaDocente = materiaDocente::where("id_docente", $docente->id)
                                             ->where("id_periodo", $periodo->id )
+                                            ->where("materia_docente.estado", 1)
                                             ->join("materia", "materia_docente.id_materia", "materia.id")
                                             ->get();
 
