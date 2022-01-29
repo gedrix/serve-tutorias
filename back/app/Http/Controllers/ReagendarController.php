@@ -129,4 +129,3 @@ class ReagendarController extends Controller
         $datos['mensaje'] = '';
     }
 }
-

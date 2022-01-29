@@ -87,16 +87,25 @@ $router->get('/docente/lista-materia/{external_id}', 'MateriaController@listarMa
 $router->post('/docente/eliminar-materia/{external_id}', 'MateriaController@eliminarMateriaDocente');
 $router->post('/docente/modificar-materia', 'MateriaController@ModificarMateriaDocente');
 $router->post('/docente/materias-periodo', 'MateriaController@listaMateriaPeriodo');
+$router->post('/docente/consolidadoAD4/{external_id}', 'ConsolidadoController@consolidadoAD4');
+
+// horas asignadas
+$router->post('/horas-asignadas/registro-horas-asignadas', 'HorasAsignadasController@registroHorasAsignadasDocente');
+$router->post('/horas-asignadas/editar-horas-asignadas', 'HorasAsignadasController@editaroHorasAsignadasDocente');
+$router->post('/horas-asignadas/eliminar-horas-asignadas/{external_id}', 'HorasAsignadasController@eliminaroHorasAsignadasDocente');
+$router->get('/horas-asignadas/listar-horas-asignadas/{external_id}', 'HorasAsignadasController@listarHoraAsignadaDocente');
 
 
 
-
-
-
-
-
-
-
-
-
-
+//titulacion
+$router->post('/estudiante/titulacion', 'TitulacionController@RegistroTemaTitulacion');
+$router->post('/estudiante/titulacion/editar', 'TitulacionController@ModificarTemaTitulacion');
+$router->post('/estudiante/eliminar-titulacion/{external_id}', 'TitulacionController@EliminarTemaTitulacion');
+$router->get('/estudiante/obtener-titulacion/{external_id}', 'TitulacionController@listarTemaTitulacion');
+$router->get('/docente/obtener-lista-titulacion/{external_id}/{external_periodo}', 'ConsolidadoController@listaDeTemasTitulacionPorDocente');
+$router->post('/docente/obtener-lista-tema-titulacion/{external_id}', 'ConsolidadoController@actividadPorTemaTitulacion');
+$router->post('/docente/consolidadoAD8/{external_id}', 'ConsolidadoController@consolidadoAD8');
+$router->post('/docente/ToTalHorasconsolidadoAD4/{external_id}', 'ConsolidadoController@ToTalHorasconsolidadoAD4');
+$router->post('/docente/totalconsolidadoAD8/{external_id}', 'ConsolidadoController@totalconsolidadoAD8');
+$router->post('/docente/diasAsignadosAD4/{external_id}', 'HorasAsignadasController@diasAsignadosAD4');
+$router->post('/docente/diasAsignadosAD8/{external_id}', 'HorasAsignadasController@diasAsignadosAD8');

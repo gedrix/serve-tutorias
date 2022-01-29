@@ -14,7 +14,10 @@ class Usuario extends Model
 
 
 	//para saber si en la tabla usamos created_at y updated_at
+    //created_at => se crea solito cuando se hace un registro
+    //update_at => se modifica solita cuando se hace modificación
     public $timestamps = true;
+
     //lista blancas campos publicos
     protected $fillable = ['correo', 'clave','tipoUsuario','estado','external_us','created_at','updated_at'];
     //lista negra campos que no quieren que se encuentren facilmente

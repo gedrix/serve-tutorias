@@ -72,6 +72,7 @@ class UsuarioController extends Controller
                     $estudianteObj->nombres = $data['nombres'];
                     $estudianteObj->apellidos = $data['apellidos'];
                     $estudianteObj->ciclo = $data['ciclo'];
+                    $estudianteObj->cedula = $data['cedula'];
                     $estudianteObj->paralelo =strtoupper($data['paralelo']);
                     $estudianteObj->save();
                     self::estadoJson(200, true, '');
@@ -80,6 +81,7 @@ class UsuarioController extends Controller
                     $persona->nombres = $data["nombres"];
                     $persona->apellidos = $data["apellidos"];
                     $persona->ciclo = $data["ciclo"];
+                    $persona->cedula = $data['cedula'];
                     $persona->paralelo =strtoupper($data["paralelo"]) ;
                     $persona->estado = 1;
                     $persona->id_usuario = $usuario->id;
@@ -115,12 +117,14 @@ class UsuarioController extends Controller
                     $docenteObj = docente::find($docente->id);
                     $docenteObj->nombres = $data['nombres'];
                     $docenteObj->apellidos = $data['apellidos'];
+                    $docenteObj->relacion_laboral = $data['relacion_laboral'];
                     $docenteObj->save();
                     self::estadoJson(200, true, '');
                 }else{
                     $docente = new docente();
                     $docente->nombres = $data["nombres"];
                     $docente->apellidos = $data["apellidos"];
+                    $docente->relacion_laboral = $data['relacion_laboral'];
                     $docente->tipo_docente = 1;
                     $docente->estado = 1;
                     $docente->id_usuario = $usuario->id;
@@ -166,9 +170,12 @@ class UsuarioController extends Controller
                             "correo" => $usuario->correo,
                             "tipoUsuario" => $usuario->tipoUsuario,
                             "externalUsuario" => $usuario->external_us,
-                             "nombreUsuario" => $estudiante?  $estudiante->nombres ." ". $estudiante->apellidos : '',
+                            "nombreUsuario" => $estudiante?  $estudiante->nombres ." ". $estudiante->apellidos : '',
+                            //"cedula" => $estudiante?  $estudiante->cedula : '',
                             "externalEstudiante" =>$estudiante? $estudiante->external_es: '',
-                            "externalPeriodo" => $periodo->external_periodo,
+                            "externalPeriodo" =>$periodo ? $periodo->external_periodo : '',
+                            "ciclo" => $estudiante ? $estudiante->ciclo : '',
+                            "paralelo" => $estudiante? $estudiante->paralelo: '',
                             "menu" => self::getMenu($usuario->tipoUsuario)
                         ];
                     }
@@ -182,6 +189,7 @@ class UsuarioController extends Controller
                             "externalDocente" =>$docente? $docente->external_do: '',
                             "nombreUsuario" => $docente?  $docente->nombres ." ". $docente->apellidos : '',
                             "tipoDocente" => $docente? $docente->tipo_docente : '',
+                            "relacion_laboral" => $docente? $docente->relacion_laboral : '',
                             "menu" => self::getMenu($usuario->tipoUsuario)
 
                             //'materiasDocente' =>$materiaobj
@@ -233,6 +241,7 @@ class UsuarioController extends Controller
                     "apellidos" => $estudiante->apellidos,
                     "ciclo" => $estudiante->ciclo,
                     "paralelo" => $estudiante->paralelo,
+                    "cedula" => $estudiante->cedula,
                     "externalEstudiante" => $estudiante->external_es,
                     //"external_usuario" => $estudianteObj->external_us
                 ];
@@ -260,6 +269,7 @@ class UsuarioController extends Controller
                 "nombres" => $docente->nombres,
                 "apellidos" => $docente->apellidos,
                 "tipo_docente" => $docente->tipo_docente,  //1 docente, 2 gestor
+                "relacion_laboral" => $docente->relacion_laboral,
                 "externalDocente" => $docente->external_do,
                 "externalUsuario" => $docente->usuario->external_us
             ];
@@ -406,7 +416,7 @@ class UsuarioController extends Controller
         //     "clave aux" => $auxClave
         // ];
              $cabecera = "Usuario";
-            $correo = "alfonso.rm1193@gmail.com";
+             $correo = "alfonso.rm1193@gmail.com";
              $asunto="Recuperar clave";
              $mensaje= "su nueva clave es: ".$auxClave;
              $mensajeaux = "<p>su clave se cambió con exito, se recomienda cambiar la clave </p>";
@@ -536,4 +546,3 @@ class UsuarioController extends Controller
         $datos['mensaje'] = '';
     }
 }
-

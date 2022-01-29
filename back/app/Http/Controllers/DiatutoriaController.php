@@ -463,4 +463,3 @@ class DiatutoriaController extends Controller
         $datos['mensaje'] = '';
     }
 }
-
