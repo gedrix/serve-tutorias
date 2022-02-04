@@ -98,6 +98,10 @@ class ReservaController extends Controller
                 $asistencia->id_estudiante = $value;
                 $asistencia->estado = 2;
                 $asistencia->id_reserva = $reserva->id;
+                $asistencia->id_materia = $reserva->id_materia;
+                $asistencia->id_periodo = $reserva->id_periodo_academico;
+                $asistencia->id_docente = $reserva->id_docente;
+
                 $asistencia->save();
             }
             $cabecera = "Docente";
@@ -320,7 +324,7 @@ class ReservaController extends Controller
             // }
 
             $reservas =  reserva::select('reservatutoria.modalidad','reservatutoria.tiempo_duracion','tema_tutoria','fecha','hora_tutoria','hora_fin','asistencia.id_estudiante','actividad','youtube','repositorio','registroactividad.modalidad','registroactividad.recurso_virtual', 'materia.materia')
-            ->where("id_docente", $docenteObj->id)
+            ->where("reservatutoria.id_docente", $docenteObj->id)
             ->where("reservatutoria.tipo_tutoria", 0)
             ->where("id_periodo_academico", $periodo->id)
             ->where("reservatutoria.estado", 0)
