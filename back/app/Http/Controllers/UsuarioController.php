@@ -416,7 +416,8 @@ class UsuarioController extends Controller
         //     "clave aux" => $auxClave
         // ];
              $cabecera = "Usuario";
-             $correo = "alfonso.rm1193@gmail.com";
+            // $correo = "alfonso.rm1193@gmail.com";
+             $correo = $data['correo'];
              $asunto="Recuperar clave";
              $mensaje= "su nueva clave es: ".$auxClave;
              $mensajeaux = "<p>su clave se cambió con exito, se recomienda cambiar la clave </p>";
