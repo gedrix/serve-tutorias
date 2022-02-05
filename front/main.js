@@ -169,8 +169,8 @@ __webpack_require__.r(__webpack_exports__);
 const environment = {
     production: false,
     apiConfig: {
-        //apiURL:'http://ciscunl.info:8080/serve-tutorias/back/public/index.php'
-        apiURL: 'http://localhost/serve-tutorias/back/public/index.php'
+        apiURL: 'http://ciscunl.info:8080/serve-tutorias/back/public/index.php'
+        //apiURL:'http://localhost/serve-tutorias/back/public/index.php'
     }
 };
 //apiURL:'http://tutoriasrest.carbunco.com/public/index.php'
