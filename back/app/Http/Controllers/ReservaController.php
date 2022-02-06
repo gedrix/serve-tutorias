@@ -48,6 +48,8 @@ class ReservaController extends Controller
             $estudianteObj = estudiante::where("external_es", $data["externalEstdudiante"])->first();
             $docenteObj = docente::where("external_do", $data["externalDocente"])->first();
 
+            $docenteMail = usuario::where("id", "=", $docenteObj->id_usuario)->first();
+
             $externalMateria = materia::where("external_ma", $data["externalMateria"])->first();
             $periodo = periodoAcademico::where("estado", 1)->first();
             
@@ -106,6 +108,7 @@ class ReservaController extends Controller
             }
             $cabecera = "Docente";
              $correo = "alfonso.rm1193@gmail.com";
+            //$correo = $docenteMail->correo;
              $asunto="Nueva tutoria";
 
             $mensaje= "El estudiante ". $estudianteObj->nombres. " ". $estudianteObj->apellidos. " ha reservado una tutoría";
@@ -217,6 +220,8 @@ class ReservaController extends Controller
 
             $reserva = reserva::where("external_rt", $exnternal_reserva)->first();
 
+            $docenteObj = docente::where("id",$reserva->id_docente)->first();
+            $docenteMail = usuario::where("id", "=", $docenteObj->id_usuario)->first();
             if ($reserva) {
                 $reservaEditar = reserva::find($reserva->id);
 
@@ -227,6 +232,7 @@ class ReservaController extends Controller
                 $reservaEditar->save();
                 $cabecera = "Docente";
                 $correo = "alfonso.rm1193@gmail.com";
+                //correo = $docenteMail->correo;
                 $asunto="Reserva cancelada";
                 $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria  ."<br>"."Por el motivo de: "." " . $data["motivo"];
                 $mensajeaux = "<p>Muchas gracias por la atención </p>";
@@ -251,7 +257,8 @@ class ReservaController extends Controller
             $data = $request->json()->all();
 
             $reserva = reserva::where("external_rt", $exnternal_reserva)->first();
-
+            $estudianteObj = estudiante::where("id",$reserva->id_estudiante)->first();
+            $estudianteMail = usuario::where("id", "=", $estudianteObj->id_usuario)->first();
             if ($reserva) {
                 $reservaEditar = reserva::find($reserva->id);
 
@@ -262,7 +269,8 @@ class ReservaController extends Controller
                 $reservaEditar->save();
 
                 $cabecera = "Estudiante";
-                $correo = "alfonso.rm1193@gmail.com";
+                //$correo = "alfonso.rm1193@gmail.com";
+                $correo = $estudianteMail->correo;
                 $asunto="Nueva tutoria";
                 $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria ." "."<br>"."Por el motivo de: ". $data["motivo"] ;
                 $mensajeaux = "<p>Muchas gracias por la atención </p>";
