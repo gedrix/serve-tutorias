@@ -29,7 +29,7 @@ class MailController extends Controller{
                 //$mail->Port       = $mailObj->puerto;                                  //TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
                 //Recipients
-                $mail->setFrom('gedrix.rm93@gmail.com', 'Modulo de tutorías');
+                $mail->setFrom('cis.unl.tesis@gmail.com', 'Modulo de tutorias');
                 $mail->addAddress($correo);               //Name is optional
 
                 //Content
