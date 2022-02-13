@@ -65,42 +65,57 @@ class UsuarioController extends Controller
             $data = $request->json()->all();
             $usuario = usuario::where("external_us", $external_id)->first();
 
-            if ($usuario->tipoUsuario == 2) {
-                $estudiante = estudiante::where("id_usuario", $usuario->id)->first();
-                if ($estudiante) {
-                    $estudianteObj = estudiante::find($estudiante->id);
-                    $estudianteObj->nombres = $data['nombres'];
-                    $estudianteObj->apellidos = $data['apellidos'];
-                    $estudianteObj->ciclo = $data['ciclo'];
-                    $estudianteObj->cedula = $data['cedula'];
-                    $estudianteObj->paralelo =strtoupper($data['paralelo']);
-                    $estudianteObj->save();
-                    self::estadoJson(200, true, '');
-                }else{
-                    $persona = new estudiante();
-                    $persona->nombres = $data["nombres"];
-                    $persona->apellidos = $data["apellidos"];
-                    $persona->ciclo = $data["ciclo"];
-                    $persona->cedula = $data['cedula'];
-                    $persona->paralelo =strtoupper($data["paralelo"]) ;
-                    $persona->estado = 1;
-                    $persona->id_usuario = $usuario->id;
-                    $persona->external_es = "Es" . Utilidades\UUID::v4();
-                    $persona->save();
-                    $datos['data'] = [
-                        "externalEstudiante" => $persona->external_es
-                        ];
-                    self::estadoJson(200, true, '');
-                }
+            $verificar_tamanio_cedula = strlen($data['cedula']);
+            $validar_cedula = self::digitos_permitidos($data['cedula']);
+            if ($verificar_tamanio_cedula == 10 && $validar_cedula ) {
+                if ($usuario->tipoUsuario == 2) {
+                    $estudiante = estudiante::where("id_usuario", $usuario->id)->first();
+                    if ($estudiante) {
+                        $estudianteObj = estudiante::find($estudiante->id);
+                        $estudianteObj->nombres = $data['nombres'];
+                        $estudianteObj->apellidos = $data['apellidos'];
+                        $estudianteObj->ciclo = $data['ciclo'];
+                        $estudianteObj->cedula = $data['cedula'];
+                        $estudianteObj->paralelo =strtoupper($data['paralelo']);
+                        $estudianteObj->save();
+                        self::estadoJson(200, true, '');
+                    }else{
+                        $persona = new estudiante();
+                        $persona->nombres = $data["nombres"];
+                        $persona->apellidos = $data["apellidos"];
+                        $persona->ciclo = $data["ciclo"];
+                        $persona->cedula = $data['cedula'];
+                        $persona->paralelo =strtoupper($data["paralelo"]) ;
+                        $persona->estado = 1;
+                        $persona->id_usuario = $usuario->id;
+                        $persona->external_es = "Es" . Utilidades\UUID::v4();
+                        $persona->save();
+                        $datos['data'] = [
+                            "externalEstudiante" => $persona->external_es
+                            ];
+                        self::estadoJson(200, true, '');
+                    }
 
+                }
+            }else{
+                self::estadoJson(400, false, 'Dígitos menos del 10 o Ingreso de dígitos no permitidos');
             }
+            
         } else {
             self::estadoJson(400, false, 'Datos Incorrectos');
         }
         return response()->json($datos, $estado);
 
     }
-
+    public function digitos_permitidos($cedula){
+        $permitidos = "0123456789";
+        for ($i=0; $i<strlen($cedula); $i++){
+            if (strpos($permitidos, substr($cedula,$i,1))===false){
+                return false;
+            }
+        }
+        return true;
+    }
     //REGISTRO DE DOCENTE
     //1 docente, 2 gestor
     public function RegistrarDocente(Request $request, $external_id)

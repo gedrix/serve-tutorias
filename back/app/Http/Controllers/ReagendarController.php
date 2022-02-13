@@ -32,7 +32,8 @@ class ReagendarController extends Controller
         $data = $request->json()->all();
 
         $reserva = reserva::where("external_rt", $data["externalReserva"])->first();
-
+        $estudianteObj = estudiante::where("id",$reserva->id_estudiante)->first();
+        $estudianteMail = usuario::where("id", "=", $estudianteObj->id_usuario)->first();
         if ($reserva) {
             $reservaEditar = reserva::find($reserva->id);
             $reservaEditar->fecha = $data["fecha"];
@@ -45,7 +46,8 @@ class ReagendarController extends Controller
             $reservaEditar->save();
             //$cuerpoMensaje = $data["mensaje"];
             $cabecera = "Estudiante";
-            $correo = "alfonso.rm1193@gmail.com";
+            //$correo = "alfonso.rm1193@gmail.com";
+            $correo = $estudianteMail->correo;
             $asunto="Tutoria reagendada";
             $mensaje= "Se ha realizado una reagendación de tutoría respecto a: ". $reserva->tema_tutoria.",". " por los motivos de:  ". $data["mensaje"];
             $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";

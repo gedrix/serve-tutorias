@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Usuario;
 use App\Models\Asistencia;
 use App\Models\Estudiante;
 use App\Models\Materia;
@@ -107,8 +108,8 @@ class ReservaController extends Controller
                 $asistencia->save();
             }
             $cabecera = "Docente";
-             $correo = "alfonso.rm1193@gmail.com";
-            //$correo = $docenteMail->correo;
+             //$correo = "alfonso.rm1193@gmail.com";
+            $correo = $docenteMail->correo;
              $asunto="Nueva tutoria";
 
             $mensaje= "El estudiante ". $estudianteObj->nombres. " ". $estudianteObj->apellidos. " ha reservado una tutoría";
@@ -231,8 +232,8 @@ class ReservaController extends Controller
 
                 $reservaEditar->save();
                 $cabecera = "Docente";
-                $correo = "alfonso.rm1193@gmail.com";
-                //correo = $docenteMail->correo;
+                //$correo = "alfonso.rm1193@gmail.com";
+                $correo = $docenteMail->correo;
                 $asunto="Reserva cancelada";
                 $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria  ."<br>"."Por el motivo de: "." " . $data["motivo"];
                 $mensajeaux = "<p>Muchas gracias por la atención </p>";
