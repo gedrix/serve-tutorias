@@ -270,8 +270,8 @@ class ReservaController extends Controller
                 $reservaEditar->save();
 
                 $cabecera = "Estudiante";
-                //$correo = "alfonso.rm1193@gmail.com";
-                $correo = $estudianteMail->correo;
+                $correo = "alfonso.rm1193@gmail.com";
+                //$correo = $estudianteMail->correo;
                 $asunto="Nueva tutoria";
                 $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria ." "."<br>"."Por el motivo de: ". $data["motivo"] ;
                 $mensajeaux = "<p>Muchas gracias por la atención </p>";
