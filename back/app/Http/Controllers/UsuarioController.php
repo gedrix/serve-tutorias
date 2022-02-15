@@ -28,31 +28,63 @@ class UsuarioController extends Controller
 
         if ($request->json()) {
             $data = $request->json()->all();
+            $validar_email = self::valdiaremail($data['correo']);
+            if ($validar_email) {
+               $usuario = usuario::where("correo", $data["correo"])->first(); //verifico que si hay un campo con ese correo
+                if (!$usuario) {
+                    $usuario = new usuario();
+                    $usuario->correo = $data["correo"];
 
-            $usuario = usuario::where("correo", $data["correo"])->first(); //verifico que si hay un campo con ese correo
-            if (!$usuario) {
-                $usuario = new usuario();
-                $usuario->correo = $data["correo"];
+                    $clave = sha1($data["clave"] . "unl.");
+                    $usuario->clave = $clave;
+                    $usuario->tipoUsuario = $data["tipo"];  //1 docente 2 estudiante
+                    $usuario->estado =  $data["tipo"] ==1? 0 : 1 ;
+                    $usuario->external_us = "UuA" . Utilidades\UUID::v4();
 
-                $clave = sha1($data["clave"] . "unl.");
-                $usuario->clave = $clave;
-                $usuario->tipoUsuario = $data["tipo"];  //1 docente 2 estudiante
-                $usuario->estado = 1;
-                $usuario->external_us = "UuA" . Utilidades\UUID::v4();
+                    $usuario->save();
 
-                $usuario->save();
+                    if ($usuario->tipoUsuario ==1) {
+                        $cabecera = "Docente";
+                         $correo = "alfonso.rm1193@gmail.com";
+                        //$correo = $docenteMail->correo;
+                         $asunto="Nuevo registro docente";
 
+                        $mensaje= "El docente con correo institucional ". $usuario->correo . " se ha registrado en el módulo. En caso de ser un docente correcto por favor de activar";
+                        $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";
 
-                self::estadoJson(200, true, '');
+                         $enviar = new MailController();
+                         $enviar->enviarMail($correo,  $asunto,  $mensaje ,$mensajeaux,  $cabecera);
+                        self::estadoJson(200, true, '');
+                    }else{
+                        self::estadoJson(200, true, '');
+                    }
+
+                    
+                }else{
+                    self::estadoJson(400, false, 'Correo ya existente');
+
+                }
             }else{
-                self::estadoJson(400, false, 'Correo ya existente');
+                    self::estadoJson(400, false, 'Ingrese correo valido');
 
             }
+            
 
         } else {
             self::estadoJson(400, false, 'Datos Incorrectos');
         }
         return response()->json($datos, $estado);
+    }
+
+    public function valdiaremail($email)
+    {
+        $email = trim($email);
+        $dominio = explode("@", $email);
+        if ($dominio[1] === 'unl.edu.ec') {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     //REGISTRO DE ESTUDIANTE
@@ -116,6 +148,8 @@ class UsuarioController extends Controller
         }
         return true;
     }
+
+    
     //REGISTRO DE DOCENTE
     //1 docente, 2 gestor
     public function RegistrarDocente(Request $request, $external_id)
@@ -215,7 +249,21 @@ class UsuarioController extends Controller
                     self::estadoJson(200, true, 'Inicio de sesión correcto');
 
                 } else {
-                    self::estadoJson(400, false, 'Datos Incorrectos');
+                    /*if ($usuario->tipoUsuario = 1 && $usuario->estado = 0) {
+                        self::estadoJson(400, false, 'Gestione la activación de su cuenta con el gestor de la carrera');
+                    }else{
+                        self::estadoJson(400, false, 'Datos Incorrectos');
+                    }*/
+                    $usuario = Usuario::where("correo", "=", $data["correo"])
+                    ->where("clave", "=", $clave)
+                    ->where("estado", 0)
+                    ->where("tipoUsuario", 1)
+                    ->first();
+                    if($usuario){
+                        self::estadoJson(300, false, 'Gestione la activación de su cuenta con el gestor de la carrera');
+                    }else{
+                        self::estadoJson(400, false, 'Datos Incorrectos');
+                    }
                 }
             } catch (\Exception $e) {
                 self::estadoJson(400, false, $e);

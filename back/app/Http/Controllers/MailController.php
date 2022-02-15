@@ -45,7 +45,7 @@ class MailController extends Controller{
                 "</p>" . $mensajeaux .""  .
                 "
                 <br>
-                <a style='text-decoration: none;color:#fafafa;border-radius: 10px;padding:1%;background-color: #071831;' href='https://comunidadesestudiantiles.000webhostapp.com/' target='_blanck'>Acceder</a>
+                <a style='text-decoration: none;color:#fafafa;border-radius: 10px;padding:1%;background-color: #071831;' href='http://ciscunl.info:8080/serve-tutorias/front/#/inicio' target='_blanck'>Acceder</a>
                 <br><br>
                 <p>Saludos Cordiales</p>
                 <hr>

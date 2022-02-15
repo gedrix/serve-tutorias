@@ -108,8 +108,8 @@ class ReservaController extends Controller
                 $asistencia->save();
             }
             $cabecera = "Docente";
-             //$correo = "alfonso.rm1193@gmail.com";
-            $correo = $docenteMail->correo;
+             $correo = "alfonso.rm1193@gmail.com";
+            //$correo = $docenteMail->correo;
              $asunto="Nueva tutoria";
 
             $mensaje= "El estudiante ". $estudianteObj->nombres. " ". $estudianteObj->apellidos. " ha reservado una tutoría";

@@ -247,6 +247,9 @@ class ErrorInterceptorService {
                         case 400:
                             this.messageService.add({ severity: 'warn', summary: 'Error', detail: error.error.mensaje });
                             break;
+                        case 300:
+                            this.messageService.add({ severity: 'info', summary: 'Alerta', detail: error.error.mensaje });
+                            break;
                         case 500:
                             this.messageService.add({ severity: 'warn', summary: 'Error', detail: 'Ocurrio un error, intentelo mas tarde.' });
                             break;
