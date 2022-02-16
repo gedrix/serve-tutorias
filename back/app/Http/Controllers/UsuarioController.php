@@ -58,8 +58,6 @@ class UsuarioController extends Controller
                     }else{
                         self::estadoJson(200, true, '');
                     }
-
-                    
                 }else{
                     self::estadoJson(400, false, 'Correo ya existente');
 

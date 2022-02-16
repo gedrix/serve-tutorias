@@ -46,8 +46,8 @@ class ReagendarController extends Controller
             $reservaEditar->save();
             //$cuerpoMensaje = $data["mensaje"];
             $cabecera = "Estudiante";
-            $correo = "alfonso.rm1193@gmail.com";
-           // $correo = $estudianteMail->correo;
+            //$correo = "alfonso.rm1193@gmail.com";
+            $correo = $estudianteMail->correo;
             $asunto="Tutoria reagendada";
             $mensaje= "Se ha realizado una reagendación de tutoría respecto a: ". $reserva->tema_tutoria.",". " por los motivos de:  ". $data["mensaje"];
             $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";

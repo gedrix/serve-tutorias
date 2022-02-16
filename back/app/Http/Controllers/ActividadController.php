@@ -24,7 +24,7 @@ class ActividadController extends Controller
         self::iniciarObjetoJSon();
         if ($request->json()) {
             $data = $request->json()->all();
-
+            $estado_reserva;
             $reserva = reserva::where("external_rt", $data["externalReserva"])->first();
 
             $actividad = new registroactividad();
@@ -33,12 +33,14 @@ class ActividadController extends Controller
             $actividad->repositorio = $data["repositorio"];
             $actividad->informacion_presentada = $reserva->tipo_tutoria == 1 ? $data["informacionTesista"] : null;
             $actividad->modalidad = $data["modalidad"];  //0 presencial 1 virtual
-            $actividad->recurso_virtual = $data["recurso_virtual"];
+            $actividad->recurso_virtual = $data["recurso_virtual"] ? $data["recurso_virtual"] : '';
             
             if ($data["actividad"] && $data["modalidad"]) {
                 $actividad->estado = 1;
+                $estado_reserva = 0;
             }else{
                 $actividad->estado = 9;
+                $estado_reserva = 9;
             }
             $actividad->id_reserva =  $reserva->id;
             //$actividad->id_docente =  $docente->id;
@@ -48,7 +50,7 @@ class ActividadController extends Controller
             //$actividad->informacion_presentada = $data["informacionTesita"];
 
             $reservaEditar = reserva::find($reserva->id);
-            $reservaEditar->estado = 0;
+            $reservaEditar->estado = $estado_reserva;
             $reservaEditar->save();
 
             //asistencia
