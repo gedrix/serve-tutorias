@@ -24,8 +24,7 @@ class ActividadController extends Controller
         self::iniciarObjetoJSon();
         if ($request->json()) {
             $data = $request->json()->all();
-            $estado_reserva;
-            $reserva = reserva::where("external_rt", $data["externalReserva"])->first();
+            
 
             $actividad = new registroactividad();
             $actividad->actividad = $data["actividad"];
@@ -35,22 +34,13 @@ class ActividadController extends Controller
             $actividad->modalidad = $data["modalidad"];  //0 presencial 1 virtual
             $actividad->recurso_virtual = $data["recurso_virtual"] ? $data["recurso_virtual"] : '';
             
-            if ($data["actividad"] && $data["modalidad"]) {
-                $actividad->estado = 1;
-                $estado_reserva = 0;
-            }else{
-                $actividad->estado = 9;
-                $estado_reserva = 9;
-            }
+
             $actividad->id_reserva =  $reserva->id;
-            //$actividad->id_docente =  $docente->id;
             $actividad->external_ac = "Ac" . Utilidades\UUID::v4();
             $actividad->save();
 
-            //$actividad->informacion_presentada = $data["informacionTesita"];
-
             $reservaEditar = reserva::find($reserva->id);
-            $reservaEditar->estado = $estado_reserva;
+            $reservaEditar->estado = 0;
             $reservaEditar->save();
 
             //asistencia
@@ -71,7 +61,19 @@ class ActividadController extends Controller
         }
     }
 
-    //registrar asistencia e inasistencia
+    public function anulartutoria($exnternal_reserva){
+        global $estado, $datos;
+        self::iniciarObjetoJSon();
+        
+        $reserva = reserva::where("external_rt", $exnternal_reserva)->first();
+
+            $reservaEditar = reserva::find($reserva->id);
+            $reservaEditar->estado = 9;
+            $reservaEditar->save();
+
+            self::estadoJson(200, true, 'Turoria Anulada');
+            return response()->json($datos, $estado);
+    }
 
 
     // registrar encuestas

@@ -40,14 +40,16 @@ class ReagendarController extends Controller
             $reservaEditar->dia_tutoria = $data["dia"];
             $reservaEditar->hora_tutoria = $data["horaInicio"];
             $reservaEditar->hora_fin = $data["horaFin"];
+            $reservaEditar->mensaje = $data["mensaje"];
+
             $reservaEditar->estado = 4;
             //$reserva->estado_encuesta =0;
             //$reservaEditar = $data["mensaje"];
             $reservaEditar->save();
             //$cuerpoMensaje = $data["mensaje"];
             $cabecera = "Estudiante";
-            //$correo = "alfonso.rm1193@gmail.com";
-            $correo = $estudianteMail->correo;
+            $correo = "alfonso.rm1193@gmail.com";
+            //$correo = $estudianteMail->correo;
             $asunto="Tutoria reagendada";
             $mensaje= "Se ha realizado una reagendación de tutoría respecto a: ". $reserva->tema_tutoria.",". " por los motivos de:  ". $data["mensaje"];
             $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";

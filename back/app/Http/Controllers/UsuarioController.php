@@ -28,7 +28,13 @@ class UsuarioController extends Controller
 
         if ($request->json()) {
             $data = $request->json()->all();
-            $validar_email = self::valdiaremail($data['correo']);
+            $validar_clave = strlen(trim($data["clave"]));
+
+            if ($validar_clave < 8) {
+                self::estadoJson(400, false, 'Mínimo de caracteres permitido 8');
+                
+            }else{
+                $validar_email = self::valdiaremail($data['correo']);
             if ($validar_email) {
                $usuario = usuario::where("correo", $data["correo"])->first(); //verifico que si hay un campo con ese correo
                 if (!$usuario) {
@@ -66,6 +72,9 @@ class UsuarioController extends Controller
                     self::estadoJson(400, false, 'Ingrese correo valido');
 
             }
+            }
+
+            
             
 
         } else {
@@ -97,36 +106,43 @@ class UsuarioController extends Controller
 
             $verificar_tamanio_cedula = strlen($data['cedula']);
             $validar_cedula = self::digitos_permitidos($data['cedula']);
-            if ($verificar_tamanio_cedula == 10 && $validar_cedula ) {
-                if ($usuario->tipoUsuario == 2) {
-                    $estudiante = estudiante::where("id_usuario", $usuario->id)->first();
-                    if ($estudiante) {
-                        $estudianteObj = estudiante::find($estudiante->id);
-                        $estudianteObj->nombres = $data['nombres'];
-                        $estudianteObj->apellidos = $data['apellidos'];
-                        $estudianteObj->ciclo = $data['ciclo'];
-                        $estudianteObj->cedula = $data['cedula'];
-                        $estudianteObj->paralelo =strtoupper($data['paralelo']);
-                        $estudianteObj->save();
-                        self::estadoJson(200, true, '');
-                    }else{
-                        $persona = new estudiante();
-                        $persona->nombres = $data["nombres"];
-                        $persona->apellidos = $data["apellidos"];
-                        $persona->ciclo = $data["ciclo"];
-                        $persona->cedula = $data['cedula'];
-                        $persona->paralelo =strtoupper($data["paralelo"]) ;
-                        $persona->estado = 1;
-                        $persona->id_usuario = $usuario->id;
-                        $persona->external_es = "Es" . Utilidades\UUID::v4();
-                        $persona->save();
-                        $datos['data'] = [
-                            "externalEstudiante" => $persona->external_es
-                            ];
-                        self::estadoJson(200, true, '');
-                    }
 
+            if ($verificar_tamanio_cedula == 10 && $validar_cedula ) {
+                $validarNombre = strlen(trim($data['nombres']));
+                $validarApellido = strlen(trim($data['apellidos']));
+                if ($validarNombre == 0 && $validarApellido == 0) {
+                    self::estadoJson(400, false, 'Por favor ingrese nombres y apellidos');
+                }else{
+                        if ($usuario->tipoUsuario == 2) {
+                        $estudiante = estudiante::where("id_usuario", $usuario->id)->first();
+                        if ($estudiante) {
+                            $estudianteObj = estudiante::find($estudiante->id);
+                            $estudianteObj->nombres = $data['nombres'];
+                            $estudianteObj->apellidos = $data['apellidos'];
+                            $estudianteObj->ciclo = $data['ciclo'];
+                            $estudianteObj->cedula = $data['cedula'];
+                            $estudianteObj->paralelo =$data['paralelo'];
+                            $estudianteObj->save();
+                            self::estadoJson(200, true, '');
+                        }else{
+                            $persona = new estudiante();
+                            $persona->nombres = $data["nombres"];
+                            $persona->apellidos = $data["apellidos"];
+                            $persona->ciclo = $data["ciclo"];
+                            $persona->cedula = $data['cedula'];
+                            $persona->paralelo =strtoupper($data["paralelo"]) ;
+                            $persona->estado = 1;
+                            $persona->id_usuario = $usuario->id;
+                            $persona->external_es = "Es" . Utilidades\UUID::v4();
+                            $persona->save();
+                            $datos['data'] = [
+                                "externalEstudiante" => $persona->external_es
+                                ];
+                            self::estadoJson(200, true, '');
+                        }
+                    }
                 }
+                
             }else{
                 self::estadoJson(400, false, 'Dígitos menos del 10 o Ingreso de dígitos no permitidos');
             }
@@ -158,31 +174,38 @@ class UsuarioController extends Controller
         if ($request->json()) {
             $data = $request->json()->all();
             $usuario = usuario::where("external_us", $external_id)->first();
-            if ($usuario->tipoUsuario == 1) {
-                $docente = docente::where("id_usuario", $usuario->id)->first();
-                if ($docente) {
-                    $docenteObj = docente::find($docente->id);
-                    $docenteObj->nombres = $data['nombres'];
-                    $docenteObj->apellidos = $data['apellidos'];
-                    $docenteObj->relacion_laboral = $data['relacion_laboral'];
-                    $docenteObj->save();
-                    self::estadoJson(200, true, '');
-                }else{
-                    $docente = new docente();
-                    $docente->nombres = $data["nombres"];
-                    $docente->apellidos = $data["apellidos"];
-                    $docente->relacion_laboral = $data['relacion_laboral'];
-                    $docente->tipo_docente = 1;
-                    $docente->estado = 1;
-                    $docente->id_usuario = $usuario->id;
-                    $docente->external_do = "Es" . Utilidades\UUID::v4();
-                    $docente->save();
-                    $datos['data'] = [
-                        "externalDocente" =>  $docente->external_do
-                        ];
-                    self::estadoJson(200, true, '');
-                }
+            $validarNombre = strlen(trim($data['nombres']));
+            $validarApellido = strlen(trim($data['apellidos']));
+            if ($validarNombre == 0 && $validarApellido == 0) {
+                 self::estadoJson(400, false, 'Por favor ingrese nombres y apellidos');
+            }else{
+                if ($usuario->tipoUsuario == 1) {
+                    $docente = docente::where("id_usuario", $usuario->id)->first();
+                    if ($docente) {
+                        $docenteObj = docente::find($docente->id);
+                        $docenteObj->nombres = $data['nombres'];
+                        $docenteObj->apellidos = $data['apellidos'];
+                        $docenteObj->relacion_laboral = $data['relacion_laboral'];
+                        $docenteObj->save();
+                        self::estadoJson(200, true, '');
+                    }else{
+                        $docente = new docente();
+                        $docente->nombres = $data["nombres"];
+                        $docente->apellidos = $data["apellidos"];
+                        $docente->relacion_laboral = $data['relacion_laboral'];
+                        $docente->tipo_docente = 1;
+                        $docente->estado = 1;
+                        $docente->id_usuario = $usuario->id;
+                        $docente->external_do = "Es" . Utilidades\UUID::v4();
+                        $docente->save();
+                        $datos['data'] = [
+                            "externalDocente" =>  $docente->external_do
+                            ];
+                        self::estadoJson(200, true, '');
+                    }
+                } 
             }
+            
         } else {
             self::estadoJson(400, false, 'Datos Incorrectos');
         }
@@ -221,8 +244,8 @@ class UsuarioController extends Controller
                             //"cedula" => $estudiante?  $estudiante->cedula : '',
                             "externalEstudiante" =>$estudiante? $estudiante->external_es: '',
                             "externalPeriodo" =>$periodo ? $periodo->external_periodo : '',
-                            "ciclo" => $estudiante ? $estudiante->ciclo : '',
-                            "paralelo" => $estudiante? $estudiante->paralelo: '',
+                            // "ciclo" => $estudiante ? $estudiante->ciclo : '',
+                            // "paralelo" => $estudiante? $estudiante->paralelo: '',
                             "menu" => self::getMenu($usuario->tipoUsuario)
                         ];
                     }
@@ -236,7 +259,7 @@ class UsuarioController extends Controller
                             "externalDocente" =>$docente? $docente->external_do: '',
                             "nombreUsuario" => $docente?  $docente->nombres ." ". $docente->apellidos : '',
                             "tipoDocente" => $docente? $docente->tipo_docente : '',
-                            "relacion_laboral" => $docente? $docente->relacion_laboral : '',
+                            // "relacion_laboral" => $docente? $docente->relacion_laboral : '',
                             "menu" => self::getMenu($usuario->tipoUsuario)
 
                             //'materiasDocente' =>$materiaobj
@@ -449,26 +472,33 @@ class UsuarioController extends Controller
         global $estado, $datos;
         self::iniciarObjetoJSon();
         $data = $request->json()->all();
-        $usuario = usuario::where("external_us", $data['externalUsuario'])->first();
-        $usuarioObj = usuario::find($usuario->id);
-        $clave = sha1($data["clave"] . "unl.");
+         $validar_clave = strlen(trim($data["clave"]));
 
-        $usuarioObj->clave = $clave;
-        $usuarioObj->save();
-        self::estadoJson(200, true, 'exitoso');
+        if ($validar_clave < 8) {
+                self::estadoJson(400, false, 'Mínimo de caracteres permitido 8');
+                
+        }else{
+            $usuario = usuario::where("external_us", $data['externalUsuario'])->first();
+            $usuarioObj = usuario::find($usuario->id);
+            $clave = sha1($data["clave"] . "unl.");
 
+            $usuarioObj->clave = $clave;
+            $usuarioObj->save();
+            self::estadoJson(200, true, 'exitoso');
+        }
         return response()->json($datos, $estado);
-
     }
+
     public function recuperarClave(Request $request)
     {
         global $estado, $datos;
         self::iniciarObjetoJSon();
-
+        $Strings = '0123456789abcdefghijklmnopqrstuvwxyz';
+        
         $data = $request->json()->all();
         $usuario = usuario::where("correo", $data['correo'])->first();
         $usuarioObj = usuario::find($usuario->id);
-        $auxClave = random_int(2, 5). 'unl.';
+        $auxClave = random_int(2, 5). 'unl.'.substr(str_shuffle($Strings),0, 5);
         $clave = sha1($auxClave . "unl.") ;
         $usuarioObj->clave = $clave;
         $usuarioObj->save();
@@ -477,8 +507,8 @@ class UsuarioController extends Controller
         //     "clave aux" => $auxClave
         // ];
              $cabecera = "Usuario";
-            // $correo = "alfonso.rm1193@gmail.com";
-             $correo = $data['correo'];
+            $correo = "alfonso.rm1193@gmail.com";
+             //$correo = $data['correo'];
              $asunto="Recuperar clave";
              $mensaje= "su nueva clave es: ".$auxClave;
              $mensajeaux = "<p>su clave se cambió con exito, se recomienda cambiar la clave </p>";
@@ -538,7 +568,7 @@ class UsuarioController extends Controller
 
 
     public function registrarSmt(Request  $request)
-     {
+    {
         global $estado, $datos;
         self::iniciarObjetoJSon();
 
@@ -557,7 +587,7 @@ class UsuarioController extends Controller
             self::estadoJson(400, false, 'Datos Incorrectos');
         }
         return response()->json($datos, $estado);
-     }
+    }
 
      public function listarSmt()
      {
@@ -574,8 +604,7 @@ class UsuarioController extends Controller
          return response()->json($datos, $estado);
      }
 
-     public function editarSmt(Request $request)
-     {
+     public function editarSmt(Request $request){
         global $estado, $datos;
         self::iniciarObjetoJSon();
         $data = $request->json()->all();
@@ -588,10 +617,27 @@ class UsuarioController extends Controller
         $editarSmt->save();
         self::estadoJson(200, true, 'Modificación exitosa');
         return response()->json($datos, $estado);
-
      }
 
+     public function relacionLaboral($externalDocente){
+        global $estado, $datos;
+        self::iniciarObjetoJSon();
 
+            $docente = docente::where("external_do", "=", $externalDocente)->first();
+
+            if ($docente->relacion_laboral == 0) {
+                $datos['data'][] = ["relacion_laboral" => "tiempo completo"];
+            }
+            if ($docente->relacion_laboral == 1) {
+                    $datos['data'][] = ["relacion_laboral" => "Medio completo"];
+            }
+            if ($docente->relacion_laboral == 2) {
+                 $datos['data'][] = ["relacion_laboral" => "tiempo parcial"];
+            }
+
+        self::estadoJson(200, true, '');
+        return response()->json( $datos, $estado);
+     }
 
     private static function estadoJson($estadoPeticion, $satisfactorio, $mensaje)
     {

@@ -46,6 +46,14 @@ class ReservaController extends Controller
         if ($request->json()) {
             $data = $request->json()->all();
 
+            //obtengo la fecha limite del periodo
+            $periodo = periodoAcademico::where("estado", "=",  1)->first();
+            if ( $data["fecha"] > $periodo->fecha_fin  ) {
+                self::estadoJson(400, true, 'No se puede registrar una tutoria fuera del periodo activo');
+                return response()->json($datos, $estado);
+            } 
+
+
             $estudianteObj = estudiante::where("external_es", $data["externalEstdudiante"])->first();
             $docenteObj = docente::where("external_do", $data["externalDocente"])->first();
 
@@ -54,6 +62,29 @@ class ReservaController extends Controller
             $externalMateria = materia::where("external_ma", $data["externalMateria"])->first();
             $periodo = periodoAcademico::where("estado", 1)->first();
             
+            $varlidardialibre = reserva::where("fecha", $data["fecha"] )
+                                        ->where("id_docente", $docenteObj->id)
+                                        ->where("hora_tutoria",$data["horaInicio"])
+                                        ->where("hora_fin",$data["horaFin"])
+                                        ->where("estado",0)
+                                        ->first();
+
+            $varlidardialibre2 = reserva::where("fecha", $data["fecha"] )
+                                        ->where("id_docente", $docenteObj->id)
+                                        ->where("hora_tutoria",$data["horaInicio"])
+                                        ->where("hora_fin",$data["horaFin"])
+                                        ->where("estado",4)
+                                        ->first();
+
+            if ($varlidardialibre) {
+                self::estadoJson(400, true, 'Esta Hora ya tiene un registro no puede ser tomada otra vez');
+                return response()->json($datos, $estado);                
+            }   
+            if ($varlidardialibre2) {
+                self::estadoJson(400, true, 'Esta Hora ha sido reagendada por el docente para otro estudiante');
+                return response()->json($datos, $estado);                
+            }   
+ 
             $temaTitulacion = 0;
             if ($data["tipoTutoria"] == 1) {
                 $Titulacion = Titulacion::where("estudiante", $estudianteObj->id)
@@ -86,8 +117,8 @@ class ReservaController extends Controller
             $reserva->id_docente = $docenteObj->id;
             $reserva->id_periodo_academico = $periodo->id;
             $reserva->mensaje = '';
-            $reserva->ciclo = $data['ciclo'];
-            $reserva->paralelo =strtoupper($data['paralelo']);
+            $reserva->ciclo = $estudianteObj->ciclo;
+            $reserva->paralelo =$estudianteObj->paralelo;
             $reserva->estado = 2;
             $reserva->estado_encuesta = 0;
             $reserva->id_titulacion = $temaTitulacion; 
@@ -108,8 +139,8 @@ class ReservaController extends Controller
                 $asistencia->save();
             }
             $cabecera = "Docente";
-             //$correo = "alfonso.rm1193@gmail.com";
-            $correo = $docenteMail->correo;
+             $correo = "alfonso.rm1193@gmail.com";
+            //$correo = $docenteMail->correo;
              $asunto="Nueva tutoria";
 
             $mensaje= "El estudiante ". $estudianteObj->nombres. " ". $estudianteObj->apellidos. " ha reservado una tutoría";
@@ -296,41 +327,7 @@ class ReservaController extends Controller
 
         if ($docenteObj) {
 
-            //$materia = materia::where("external_ma", $data["externalMateria"])->first();
-            // $reservas =  reserva::select('reservatutoria.modalidad','tema_tutoria','fecha','hora_tutoria','hora_fin','asistencia.id_estudiante','actividad','youtube','repositorio','registroactividad.modalidad')
-            //     ->where("id_docente", $docenteObj->id)
-            //     ->where("reservatutoria.tipo_tutoria", 0)
-            //     ->where("id_periodo_academico", $periodo->id)
-            //     ->where("reservatutoria.estado", 0)
-            //     ->where("id_materia", $materia->id)
-            //     ->join("asistencia", "reservatutoria.id", "asistencia.id_reserva")
-            //     ->where("asistencia.estado",0)
-            //     ->join("estudiante", "estudiante.external_es","asistencia.id_estudiante")
-            //     ->where("estudiante.paralelo", $data["paraleloEstudiante"])
-            //     ->join("registroactividad", "reservatutoria.id", "registroactividad.id_reserva")
-            //     ->get();
-            //     $cont =1;
-            // foreach ($reservas as $reserva) {
-            //     $datos['data'][] = [
-            //     "cont"=> $cont ++,
-            //         "fecha" => $reserva->fecha,
-            //         "hora" =>$reserva->hora_tutoria . " - ".$reserva->hora_fin,
-            //         "estudiante" => self::getNombreEstudiante($reserva->id_estudiante),
-            //         "temaTutoria" => $reserva->tema_tutoria,
-            //         "modalidadVP" => $reserva->modalidad,
-            //         "actividad" => $reserva->actividad ." ".$reserva->youtube. " ".$reserva->repositorio,
-            //         "youtube" => $reserva->youtube,
-            //         "repositorio" => $reserva->repositorio,
-            //        "materia" => $materia->materia,
-            //         "modalidadGI" => $reserva->modalidad,
-            //         "firma" => " ",
-            //         // "horaInicio" => $reserva->hora_tutoria,
-            //         // "horaFin" => $reserva->hora_fin,
-            //        // "estudiante" => $reserva->id_estudiante,
-            //         "ciclo" => self::getCicloEstudiante($reserva->id_estudiante),
-
-            //     ];
-            // }
+           
 
             $reservas =  reserva::select('reservatutoria.modalidad','reservatutoria.tiempo_duracion','tema_tutoria','fecha','hora_tutoria','hora_fin','asistencia.id_estudiante','actividad','youtube','repositorio','registroactividad.modalidad','registroactividad.recurso_virtual', 'materia.materia')
             ->where("reservatutoria.id_docente", $docenteObj->id)
@@ -376,28 +373,7 @@ class ReservaController extends Controller
         }
     }
 
-    // public function consolidadAD4(Request $request){
-    //      global $estado, $datos;
-    //     self::iniciarObjetoJSon();
-    //      $data = $request->json()->all();
-    //     $periodo = periodoAcademico::where("external_periodo", $data["externalPeriodo"])->first();
-    //     $parametro = 16;
-    //     //$submit = DB::select('call consolidado_ad4(16)');
-    //     $submit = DB::select('call consolidado_ad4(:parametro)', array('parametro'=>$periodo->id));
-    //     foreach($submit  as $row)
-    //     {
-    //         $datos['data'][] = [
-    //             "ciclo" => $row->ciclo ." ".$row->paralelo,
-    //             //"id_materia" => $row->id_materia,
-    //             "horas_programadas" $row->h_academica,
-    //             "materia" => $row->materia,
-    //             "horas_brindadas"=> $row->tiempo,
-    //             "n_estudiante"=> $row->estudiante,
-    //         ];
-    //     }
-    //     self::estadoJson(200, true, '');
-    //     return response()->json($datos, $estado);
-    // }
+   
 
     /*tutoriras dadas en titulacion */
     public function tutoriasDadasTitulacion(Request $request, $external_id)

@@ -109,3 +109,10 @@ $router->post('/docente/ToTalHorasconsolidadoAD4/{external_id}', 'ConsolidadoCon
 $router->post('/docente/totalconsolidadoAD8/{external_id}', 'ConsolidadoController@totalconsolidadoAD8');
 $router->post('/docente/diasAsignadosAD4/{external_id}', 'HorasAsignadasController@diasAsignadosAD4');
 $router->post('/docente/diasAsignadosAD8/{external_id}', 'HorasAsignadasController@diasAsignadosAD8');
+
+
+//anular tutoria
+$router->get('/docente/anulartutoria/{exnternal_reserva}', 'ActividadController@anulartutoria');
+
+//relacion laboral
+$router->get('/docente/relacionlaboral/{externalDocente}', 'UsuarioController@relacionLaboral');
