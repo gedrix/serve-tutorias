@@ -9,7 +9,7 @@ use App\Models\Reserva;
 use App\Models\Registroactividad;
 use App\Models\Encuestatutoria;
 use App\Models\PeriodoAcademico;
-
+use App\Models\Usuario;
 use Illuminate\Http\Request;
 
 class ActividadController extends Controller
@@ -41,6 +41,9 @@ class ActividadController extends Controller
 
             $reservaEditar = reserva::find($reserva->id);
             $reservaEditar->estado = 0;
+            $reservaEditar->hora_fin = $data["nuevaHorafin"];
+            $reservaEditar->tiempo_duracion = $data["duracion"];
+
             $reservaEditar->save();
 
             //asistencia
@@ -66,13 +69,32 @@ class ActividadController extends Controller
         self::iniciarObjetoJSon();
         
         $reserva = reserva::where("external_rt", $exnternal_reserva)->first();
+        $estudianteObj = docente::where("id",$reserva->id_estudiante)->first();
+         $estudianteMail = usuario::where("id", "=", $estudianteObj->id_usuario)->first();
+            
+        $reservaEditar = reserva::find($reserva->id);
+        $reservaEditar->estado = 9;
+        $reservaEditar->save();
 
-            $reservaEditar = reserva::find($reserva->id);
-            $reservaEditar->estado = 9;
-            $reservaEditar->save();
+        $cabecera = "Estudiante";
+            $correo = "alfonso.rm1193@gmail.com";
+            //$correo = $docenteMail->correo;
+            $asunto="Reserva anulada";
+            $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". 
+                    $reserva->tema_tutoria  .
+                    "<br>".
+                    "Por motivo de:  No se presentó el día de la tutoría ";
 
-            self::estadoJson(200, true, 'Turoria Anulada');
-            return response()->json($datos, $estado);
+            $mensajeaux = "<p>Muchas gracias por la atención </p>";
+
+            $enviar = new MailController();
+
+            $enviar->enviarMail($correo,  $asunto,  $mensaje, $mensajeaux, $cabecera);
+
+        self::estadoJson(200, true, 'Turoria Anulada');
+        return response()->json($datos, $estado);
+
+
     }
 
 
