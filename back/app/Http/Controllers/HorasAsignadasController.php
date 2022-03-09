@@ -37,8 +37,8 @@ class HorasAsignadasController extends Controller
                     $horaAsignada = new HorasAsignadas();
                     $horaAsignada->horas_academicas = $data["horas_academicas"];
                     $horaAsignada->dias_academicas = $data["dias_academicas"];
-                    $horaAsignada->horas_titulacion = $data["horas_titulacion"];
-                    $horaAsignada->dias_titulacion = $data["dias_titulacion"];
+                    $horaAsignada->horas_titulacion = $data["horas_titulacion"] == null? '' : $data["horas_titulacion"];
+                    $horaAsignada->dias_titulacion = $data["dias_titulacion"] == null? '' : $data["horas_titulacion"];
                     $horaAsignada->estado = 1;
                     $horaAsignada->id_docente = $docente->id;
                     $horaAsignada->id_periodo_academico = $periodo->id;

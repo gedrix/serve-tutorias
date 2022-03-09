@@ -205,6 +205,7 @@ class ReservaController extends Controller
                     "modalidad" => $lista->modalidad,
                     "fecha" => $lista->fecha,
                     "hora" => $lista->hora_tutoria,
+                    "hora_fin" => $lista->hora_fin,
                     "tipoTutoria" => $lista->tipo_tutoria,
                     "temaTutoria" => $lista->tema_tutoria,
                     "externalReserva"  => $lista->external_rt,
@@ -582,11 +583,13 @@ class ReservaController extends Controller
                     "temaTutoria" => $reserva->tema_tutoria,
                     "modalidad" => $reserva->modalidad,
                     "fecha" => $reserva->fecha,
+                    "MotivoCancelacion" => $reserva->observacion,
                     // "horaInicio" => $reserva->hora_tutoria,
                     // "horaFin" => $reserva->hora_fin,
                     "tipoTutoria" => $reserva->tipo_tutoria,
                     "estudianteCancelado" => self::estudianteCancelado($reserva->id_estudiante),
-                    "cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
+                    //"cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
+                    "cicloEstudiante" => $reserva->ciclo .' '.$reserva->paralelo
                 ];
             }
             self::estadoJson(200, true, '');
@@ -627,11 +630,13 @@ class ReservaController extends Controller
                     "temaTutoria" => $reserva->tema_tutoria,
                     "modalidad" => $reserva->modalidad,
                     "fecha" => $reserva->fecha,
+                    "MotivoCancelacion" => $reserva->observacion,
                     // "horaInicio" => $reserva->hora_tutoria,
                     // "horaFin" => $reserva->hora_fin,
                     "tipoTutoria" => $reserva->tipo_tutoria,
                     "estudianteCancelado" => self::estudianteCancelado($reserva->id_estudiante),
-                    "cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
+                    //"cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
+                    "cicloEstudiante" => $reserva->ciclo .' '.$reserva->paralelo
 
                 ];
             }

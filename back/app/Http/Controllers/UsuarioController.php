@@ -30,52 +30,62 @@ class UsuarioController extends Controller
             $data = $request->json()->all();
             $validar_clave = strlen(trim($data["clave"]));
 
-            if ($validar_clave < 8) {
-                self::estadoJson(400, false, 'Mínimo de caracteres permitido 8');
-                
-            }else{
-                $validar_email = self::valdiaremail($data['correo']);
-            if ($validar_email) {
-               $usuario = usuario::where("correo", $data["correo"])->first(); //verifico que si hay un campo con ese correo
-                if (!$usuario) {
-                    $usuario = new usuario();
-                    $usuario->correo = $data["correo"];
+                $count_num = 0;
+                $count_abc = 0;
+                $patron1 = "/^[A-Z]+$/i";
 
-                    $clave = sha1($data["clave"] . "unl.");
-                    $usuario->clave = $clave;
-                    $usuario->tipoUsuario = $data["tipo"];  //1 docente 2 estudiante
-                    $usuario->estado =  $data["tipo"] ==1? 0 : 1 ;
-                    $usuario->external_us = "UuA" . Utilidades\UUID::v4();
-
-                    $usuario->save();
-
-                    if ($usuario->tipoUsuario ==1) {
-                        $cabecera = "Docente";
-                         $correo = "alfonso.rm1193@gmail.com";
-                        //$correo = $docenteMail->correo;
-                         $asunto="Nuevo registro docente";
-
-                        $mensaje= "El docente con correo institucional ". $usuario->correo . " se ha registrado en el módulo. En caso de ser un docente correcto por favor de activar";
-                        $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";
-
-                         $enviar = new MailController();
-                         $enviar->enviarMail($correo,  $asunto,  $mensaje ,$mensajeaux,  $cabecera);
-                        self::estadoJson(200, true, '');
-                    }else{
-                        self::estadoJson(200, true, '');
-                    }
-                }else{
-                    self::estadoJson(400, false, 'Correo ya existente');
-
+                if (preg_match('`[A-Z]`',$data["clave"])){
+                     $count_abc =1;
                 }
-            }else{
-                    self::estadoJson(400, false, 'Ingrese correo valido');
 
-            }
-            }
+                
+                if (preg_match('`[0-9]`',$validar_clave)){
+                     $count_num = 1;
+                }
 
-            
-            
+            if ($validar_clave < 8  ||  $count_num == 0 || $count_abc == 0) {
+                     self::estadoJson(400, false, 'Mínimo de caracteres permitido 8, un número y una Letra en mayúscula');
+                     
+                }else{
+                    $validar_email = self::valdiaremail($data['correo']);
+                    if ($validar_email) {
+                       $usuario = usuario::where("correo", $data["correo"])->first(); //verifico que si hay un campo con ese correo
+                        if (!$usuario) {
+                            $usuario = new usuario();
+                            $usuario->correo = $data["correo"];
+
+                            $clave = sha1($data["clave"] . "unl.");
+                            $usuario->clave = $clave;
+                            $usuario->tipoUsuario = $data["tipo"];  //1 docente 2 estudiante
+                            $usuario->estado =  $data["tipo"] ==1? 0 : 1 ;
+                            $usuario->external_us = "UuA" . Utilidades\UUID::v4();
+
+                            $usuario->save();
+
+                            if ($usuario->tipoUsuario ==1) {
+                                $cabecera = "Docente";
+                                 $correo = "alfonso.rm1193@gmail.com";
+                                //$correo = $docenteMail->correo;
+                                 $asunto="Nuevo registro docente";
+
+                                $mensaje= "El docente con correo institucional ". $usuario->correo . " se ha registrado en el módulo. En caso de ser un docente correcto por favor de activar";
+                                $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";
+
+                                 $enviar = new MailController();
+                                 $enviar->enviarMail($correo,  $asunto,  $mensaje ,$mensajeaux,  $cabecera);
+                                self::estadoJson(200, true, '');
+                            }else{
+                                self::estadoJson(200, true, '');
+                            }
+                        }else{
+                            self::estadoJson(400, false, 'Correo ya existente');
+
+                        }
+                    }else{
+                            self::estadoJson(400, false, 'Ingrese correo valido');
+
+                    }
+                }
 
         } else {
             self::estadoJson(400, false, 'Datos Incorrectos');
@@ -144,7 +154,7 @@ class UsuarioController extends Controller
                 }
                 
             }else{
-                self::estadoJson(400, false, 'Dígitos menos del 10 o Ingreso de dígitos no permitidos');
+                self::estadoJson(400, false, 'La cedula debe de tener 10 dígitos o ingrese cedula valida');
             }
             
         } else {
@@ -155,11 +165,69 @@ class UsuarioController extends Controller
     }
     public function digitos_permitidos($cedula){
         $permitidos = "0123456789";
+        $numero = $cedula;
         for ($i=0; $i<strlen($cedula); $i++){
             if (strpos($permitidos, substr($cedula,$i,1))===false){
                 return false;
             }
         }
+
+        //valido cedula
+        //codigo de provincia de los 2 primeros digitos
+         
+
+        if ( (substr($cedula, 0, 2) < 0) || (substr($cedula, 0, 2) >24) ) {
+            return false;
+        }
+
+        //valida tercer digito
+        if ($numero[2] < 0 || $numero[2] > 5) {
+            return false;
+        }
+
+        $validarAlgoritmo10 = self::algoritmoModulo10(substr($numero, 0, 9), $numero[9]);
+
+         if (! $validarAlgoritmo10) {
+            return false;
+         }
+
+        return true;
+    }
+
+
+    public function algoritmoModulo10($digitosIniciales, $digitoVerificador)
+    {
+        $arrayCoeficientes = array(2,1,2,1,2,1,2,1,2);
+
+        $digitoVerificador = (int)$digitoVerificador;
+        $digitosIniciales = str_split($digitosIniciales);
+
+        $total = 0;
+        foreach ($digitosIniciales as $key => $value) {
+
+            $valorPosicion = ( (int)$value * $arrayCoeficientes[$key] );
+
+            if ($valorPosicion >= 10) {
+                $valorPosicion = str_split($valorPosicion);
+                $valorPosicion = array_sum($valorPosicion);
+                $valorPosicion = (int)$valorPosicion;
+            }
+
+            $total = $total + $valorPosicion;
+        }
+
+        $residuo =  $total % 10;
+
+        if ($residuo == 0) {
+            $resultado = 0;
+        } else {
+            $resultado = 10 - $residuo;
+        }
+
+        if ($resultado != $digitoVerificador) {
+            return false;
+        }
+
         return true;
     }
 
@@ -267,7 +335,7 @@ class UsuarioController extends Controller
                         ];
                     }
                     //self::estadoJson(200, true, '');
-                    self::estadoJson(200, true, 'Inicio de sesión correcto');
+                    self::estadoJson(200, true, '');
 
                 } else {
                     /*if ($usuario->tipoUsuario = 1 && $usuario->estado = 0) {
@@ -451,18 +519,35 @@ class UsuarioController extends Controller
     {
         global $estado, $datos;
         self::iniciarObjetoJSon();
+        $varAux;
         $usuario = usuario::where("external_us", $external_id)->first();
         if ($usuario->estado ==0) {
             $usuarioObj = usuario::find($usuario->id);
             $usuarioObj->estado = 1;
             $usuarioObj->save();
+            $varAux = 'Activado';
             self::estadoJson(200, true, '');
         }else{
             $usuarioObj = usuario::find($usuario->id);
             $usuarioObj->estado = 0;
             $usuarioObj->save();
+            $varAux = 'Desactivado';
+
             self::estadoJson(200, true, '');
         }
+
+        $cabecera = "Usuario";
+                $correo = "alfonso.rm1193@gmail.com";
+                //$correo = $usuario->correo;
+                $asunto="Usuario ". $varAux;
+                $mensaje= "Su usuario a sido: ". $varAux ."<br>";
+                $mensajeaux = "<p>Muchas gracias por la atención </p>";
+
+                $enviar = new MailController();
+
+                $enviar->enviarMail($correo,  $asunto,  $mensaje, $mensajeaux, $cabecera);
+
+
         return response()->json($datos, $estado);
 
     }
@@ -472,10 +557,23 @@ class UsuarioController extends Controller
         global $estado, $datos;
         self::iniciarObjetoJSon();
         $data = $request->json()->all();
-         $validar_clave = strlen(trim($data["clave"]));
+        $validar_clave = strlen(trim($data["clave"]));
 
-        if ($validar_clave < 8) {
-                self::estadoJson(400, false, 'Mínimo de caracteres permitido 8');
+        $count_num =0;
+        $count_abc =0;
+        $patron1 = "/^[A-Z]+$/i";
+
+        if (preg_match('`[A-Z]`',$data["clave"])){
+             $count_abc =1;
+        }
+
+        
+        if (preg_match('`[0-9]`',$validar_clave)){
+             $count_num = 1;
+        }
+
+        if ($validar_clave < 8  ||  $count_num == 0 || $count_abc == 0) {
+                self::estadoJson(400, false, 'Mínimo de caracteres permitido 8, un número y una letra en mayúscula ' );
                 
         }else{
             $usuario = usuario::where("external_us", $data['externalUsuario'])->first();
@@ -484,7 +582,7 @@ class UsuarioController extends Controller
 
             $usuarioObj->clave = $clave;
             $usuarioObj->save();
-            self::estadoJson(200, true, 'exitoso');
+            self::estadoJson(200, true, '');
         }
         return response()->json($datos, $estado);
     }
@@ -496,27 +594,39 @@ class UsuarioController extends Controller
         $Strings = '0123456789abcdefghijklmnopqrstuvwxyz';
         
         $data = $request->json()->all();
+        $validar_email = self::valdiaremail($data['correo']);
+
+        if (!$validar_email ) {
+           self::estadoJson(400, true, 'Formato de correo correo invalido');
+            return response()->json($datos, $estado);
+        }
         $usuario = usuario::where("correo", $data['correo'])->first();
-        $usuarioObj = usuario::find($usuario->id);
-        $auxClave = random_int(2, 5). 'unl.'.substr(str_shuffle($Strings),0, 5);
-        $clave = sha1($auxClave . "unl.") ;
-        $usuarioObj->clave = $clave;
-        $usuarioObj->save();
+        if ($usuario) {
+            $usuarioObj = usuario::find($usuario->id);
+            $auxClave = random_int(2, 5). 'unl.'.substr(str_shuffle($Strings),0, 5);
+            $clave = sha1($auxClave . "unl.") ;
+            $usuarioObj->clave = $clave;
+            $usuarioObj->save();
 
-        // $datos['data'] = [
-        //     "clave aux" => $auxClave
-        // ];
-             $cabecera = "Usuario";
-            $correo = "alfonso.rm1193@gmail.com";
-             //$correo = $data['correo'];
-             $asunto="Recuperar clave";
-             $mensaje= "su nueva clave es: ".$auxClave;
-             $mensajeaux = "<p>su clave se cambió con exito, se recomienda cambiar la clave </p>";
-             $enviar = new MailController();
-             $enviar->enviarMail($correo,  $asunto,  $mensaje,$mensajeaux,  $cabecera);
-        self::estadoJson(200, true, 'revise su correo');
+            // $datos['data'] = [
+            //     "clave aux" => $auxClave
+            // ];
+                 $cabecera = "Usuario";
+                $correo = "alfonso.rm1193@gmail.com";
+                 //$correo = $data['correo'];
+                 $asunto="Recuperar clave";
+                 $mensaje= "su nueva clave es: ".$auxClave;
+                 $mensajeaux = "<p>su clave se cambió con exito, se recomienda cambiar la clave </p>";
+                 $enviar = new MailController();
+                 $enviar->enviarMail($correo,  $asunto,  $mensaje,$mensajeaux,  $cabecera);
+            self::estadoJson(200, true, 'revise su correo');
+            return response()->json($datos, $estado);
+        }else{
 
-        return response()->json($datos, $estado);
+            self::estadoJson(400, true, 'El correo no existe');
+            return response()->json($datos, $estado);
+        }
+        
     }
 
     public function listarDocentes()

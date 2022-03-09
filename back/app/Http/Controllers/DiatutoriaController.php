@@ -19,38 +19,31 @@ class DiatutoriaController extends Controller
 
 
     //registrar periodo
-    // public function registrarPeriodo(Request $request)
-    // {
-    //     if ($request->json()) {
-    //         $data = $request->json()->all();
-
-    //         $periodo =  new periodoAcademico();
-    //         $periodo->nombre_periodo = $data["nombrePeriodo"];
-    //         $periodo->fecha_inicio = $data["fechaInicio"];
-    //         $periodo->fecha_fin = $data["fechaFin"];
-    //         $periodo->estado = 1;
-    //         $periodo->external_periodo = "Pe" . Utilidades\UUID::v4();
-
-    //         $periodo->save();
-    //         return response()->json(["mensaje" => "Operacion existosa", "siglas" => "OE"], 200);
-    //     }
-    // }
+    
 
     public function registrarPeriodo(Request $request)
     {
         global $estado, $datos;
         self::iniciarObjetoJSon();
         if ($request->json()) {
+
             $data  = $request->json()->all();
-            $periodo =  new periodoAcademico();
-            $periodo->nombre_periodo = $data["nombrePeriodo"];
-            $periodo->fecha_inicio = $data["fechaInicio"];
-            $periodo->fecha_fin = $data["fechaFin"];
-            $periodo->estado = 1;
-            $periodo->external_periodo = "Pe" . Utilidades\UUID::v4();
-            $periodo->save();
-            self::estadoJson(200, true, '');
-            return response()->json($datos, $estado);
+            $periodo_activo = periodoAcademico::where("estado",  1)->first();
+            if ($periodo_activo) {
+                self::estadoJson(300, true, 'Ya existe un periodo vigente');
+                return response()->json($datos, $estado);
+            }else{
+                 $periodo =  new periodoAcademico();
+                $periodo->nombre_periodo = $data["nombrePeriodo"];
+                $periodo->fecha_inicio = $data["fechaInicio"];
+                $periodo->fecha_fin = $data["fechaFin"];
+                $periodo->estado = 1;
+                $periodo->external_periodo = "Pe" . Utilidades\UUID::v4();
+                $periodo->save();
+                self::estadoJson(200, true, '');
+                return response()->json($datos, $estado);
+            }
+           
         }
     }
 

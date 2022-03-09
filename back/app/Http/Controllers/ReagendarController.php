@@ -40,6 +40,7 @@ class ReagendarController extends Controller
             $reservaEditar->dia_tutoria = $data["dia"];
             $reservaEditar->hora_tutoria = $data["horaInicio"];
             $reservaEditar->hora_fin = $data["horaFin"];
+            $reservaEditar->tiempo_duracion = $data["tiempo_duracion"];
             $reservaEditar->mensaje = $data["mensaje"];
 
             $reservaEditar->estado = 4;
