@@ -25,7 +25,8 @@ class ActividadController extends Controller
         if ($request->json()) {
             $data = $request->json()->all();
             
-
+            $reserva = reserva::where("external_rt", $data["externalReserva"])->first();
+            
             $actividad = new registroactividad();
             $actividad->actividad = $data["actividad"];
             $actividad->youtube = $data["youtube"];

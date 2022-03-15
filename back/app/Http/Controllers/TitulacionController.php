@@ -31,9 +31,7 @@ class TitulacionController extends Controller {
                 $parejaObj = estudiante::where("external_es", $data["externalPareja"])->first();
             }
             
-            $verExistepareja = Titulacion::where("pareja", $estudianteObj->id)
-                                        ->where("estado",1)
-                                        ->first();
+            $verExistepareja = Titulacion::where("pareja", $estudianteObj->id)->where("estado",1)->first();
 
             $docenteObj = docente::where("external_do", $data["externalDocente"])->first();
             
@@ -79,7 +77,7 @@ class TitulacionController extends Controller {
             $titulacionObj = Titulacion::find($titulacion->id);
             $titulacionObj->tema = $data["tema"];
             $titulacionObj->save();
-            self::estadoJson(200, true, 'Tema de titulación modificada');
+            self::estadoJson(200, true, 'Tema de titulación modificado');
 
             return response()->json($datos, $estado);
         }

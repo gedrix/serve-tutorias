@@ -314,7 +314,7 @@ class DiatutoriaController extends Controller
                     $hora->external_h = "Di" . Utilidades\UUID::v4();
                     $hora->save();
                 }
-                self::estadoJson(200, true, '');
+                self::estadoJson(200, true, 'Creación de turno exitoso');
             }else{
                 $dias = new diastutoria();
                 $dias->dia_semana = strtolower($data["diaSemana"]);
@@ -336,7 +336,7 @@ class DiatutoriaController extends Controller
                     $hora->external_h = "Di" . Utilidades\UUID::v4();
                     $hora->save();
                 }
-                self::estadoJson(200, true, '');
+                self::estadoJson(200, true, 'Creación de turno exitoso');
             }
             return response()->json($datos, $estado);
 

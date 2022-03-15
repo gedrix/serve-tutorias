@@ -42,7 +42,7 @@ class ReservaController extends Controller
     {
         global $estado, $datos;
         self::iniciarObjetoJSon();
-
+        $verExisteEstudiante = '';
         if ($request->json()) {
             $data = $request->json()->all();
 
@@ -76,6 +76,12 @@ class ReservaController extends Controller
                                         ->where("estado",4)
                                         ->first();
 
+            $varlidardialibre3 = reserva::where("fecha", $data["fecha"] )
+                                        ->where("id_docente", $docenteObj->id)
+                                        ->where("hora_tutoria",$data["horaInicio"])
+                                        ->where("hora_fin",$data["horaFin"])
+                                        ->where("estado",2)
+                                        ->first();
             if ($varlidardialibre) {
                 self::estadoJson(400, true, 'Esta Hora ya tiene un registro no puede ser tomada otra vez');
                 return response()->json($datos, $estado);                
@@ -84,21 +90,34 @@ class ReservaController extends Controller
                 self::estadoJson(400, true, 'Esta Hora ha sido reagendada por el docente para otro estudiante');
                 return response()->json($datos, $estado);                
             }   
+            if ($varlidardialibre3) {
+                self::estadoJson(400, true, 'Esta Hora ha sido reagendada por el docente para otro estudiante');
+                return response()->json($datos, $estado);                
+            } 
  
             $temaTitulacion = 0;
             if ($data["tipoTutoria"] == 1) {
                 $Titulacion = Titulacion::where("estudiante", $estudianteObj->id)
                             ->where("estado",1)
                             ->first();
+                 $verExisteEstudiante = Titulacion::where("estudiante", $estudianteObj->id)->where("estado",1)->first();
 
                 if ($Titulacion  =='' || $Titulacion == null) {
                     $Titulacion = Titulacion::where("pareja", $estudianteObj->id)
                                 ->where("estado",1)
                                 ->first();
+                     $verExisteEstudiante = Titulacion::where("pareja", $estudianteObj->id)->where("estado",1)->first();
 
                 }
+                if (!$verExisteEstudiante) {
+                    self::estadoJson(300, true, 'Debe de ingresar tema de titulación, en el menú lateral opción titulación');
+                    return response()->json($datos, $estado);
+                }
                 $temaTitulacion = $Titulacion->id;
+
+
             }
+            
             $reserva = new reserva();
 
             // modalidad individual 1, 2 grupal
@@ -264,8 +283,8 @@ class ReservaController extends Controller
 
                 $reservaEditar->save();
                 $cabecera = "Docente";
-                //$correo = "alfonso.rm1193@gmail.com";
-                $correo = $docenteMail->correo;
+                $correo = "alfonso.rm1193@gmail.com";
+                //$correo = $docenteMail->correo;
                 $asunto="Reserva cancelada";
                 $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria  ."<br>"."Por el motivo de: "." " . $data["motivo"];
                 $mensajeaux = "<p>Muchas gracias por la atención </p>";
@@ -302,8 +321,8 @@ class ReservaController extends Controller
                 $reservaEditar->save();
 
                 $cabecera = "Estudiante";
-                //$correo = "alfonso.rm1193@gmail.com";
-                $correo = $estudianteMail->correo;
+                $correo = "alfonso.rm1193@gmail.com";
+                //$correo = $estudianteMail->correo;
                 $asunto="Nueva tutoria";
                 $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". $reserva->tema_tutoria ." "."<br>"."Por el motivo de: ". $data["motivo"] ;
                 $mensajeaux = "<p>Muchas gracias por la atención </p>";

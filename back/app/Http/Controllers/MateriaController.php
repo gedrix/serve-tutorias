@@ -78,11 +78,12 @@ class MateriaController extends Controller
                 }else{
                     self::estadoJson(400, false, 'Datos Incorrectos');
                 }
-
-
-
+                return response()->json($datos, $estado);
+            }else{
+                self::estadoJson(300, false, 'No se ha completo el registro de sus datos, complete los datos en su perfil');
                 return response()->json($datos, $estado);
             }
+
         }
     }
 

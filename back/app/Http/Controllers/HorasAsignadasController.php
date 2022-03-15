@@ -27,8 +27,6 @@ class HorasAsignadasController extends Controller
             $data = $request->json()->all();
             $docente = docente::where("external_do", "=", $data["externalDocente"])->first();
             if ($docente) {
-                
-
                 $VerExiste = HorasAsignadas::where("id_docente", "=", $docente->id)
                                             ->where("estado", "=", 1)
                                             ->first();
@@ -38,7 +36,7 @@ class HorasAsignadasController extends Controller
                     $horaAsignada->horas_academicas = $data["horas_academicas"];
                     $horaAsignada->dias_academicas = $data["dias_academicas"];
                     $horaAsignada->horas_titulacion = $data["horas_titulacion"] == null? '' : $data["horas_titulacion"];
-                    $horaAsignada->dias_titulacion = $data["dias_titulacion"] == null? '' : $data["horas_titulacion"];
+                    $horaAsignada->dias_titulacion = $data["dias_titulacion"] == null? '' : $data["dias_titulacion"];
                     $horaAsignada->estado = 1;
                     $horaAsignada->id_docente = $docente->id;
                     $horaAsignada->id_periodo_academico = $periodo->id;
@@ -51,9 +49,9 @@ class HorasAsignadasController extends Controller
                 }else{
                      self::estadoJson(400, false, 'Ya ha registrado las horas asignadas');
                 }
-                
+            }else{
+                self::estadoJson(300, false, 'No se ha completo el registro de sus datos, complete los datos en su perfil');
             }
-            
         }
         return response()->json($datos, $estado);
     }
@@ -122,7 +120,7 @@ class HorasAsignadasController extends Controller
         $editarHorasAsignadasDocente = HorasAsignadas::find($editar->id);
         $editarHorasAsignadasDocente->estado = 0;
         $editarHorasAsignadasDocente->save();
-        self::estadoJson(200, true, 'Horas asignadas eliminada');
+        self::estadoJson(200, true, 'Horario Eliminado');
 
         return response()->json($datos, $estado);
     }

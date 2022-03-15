@@ -95,10 +95,14 @@ class ReagendarController extends Controller
     public function accitas(Request $request, $external_id)
     {
         global $estado, $datos;
+        $asunto = '';
+        $mensaje= '';
         self::iniciarObjetoJSon();
         if ($request->json()) {
             $data = $request->json()->all();
             $reserva = reserva::where("external_rt", $external_id)->first();
+            $docenteObj = docente::where("id",$reserva->id_docente)->first();
+            $docenteMail = usuario::where("id", "=", $docenteObj->id_usuario)->first();
 
             if ($reserva) {
                 $reservaEditar = reserva::find($reserva->id);
@@ -106,13 +110,30 @@ class ReagendarController extends Controller
                 if($data["estado"] == 1){
                     $reservaEditar->observacion = "reagendación rechazada por  -". ' '. $data["motivo"] ;
                     $reservaEditar->estado = $data["estado"];  //1 rechaza
+                    $asunto="Cancelacion de tutoría reagendada";
+                    $mensaje= "La tutoría reagendada respecto a: ". $reserva->tema_tutoria . ". Ha sido cancelada por el estudiante.";
+                    self::estadoJson(200, true, 'Tutoría reagenda rechazada');
 
                 }else{
                     $reservaEditar->estado = $data["estado"];  //2 acepta
+                    $asunto="Aceptacion de tutoría reagendada";
+                    $mensaje= "Se ha realizado la aceptación de la tutoría reagendada respecto a: ". $reserva->tema_tutoria;
+
+                    self::estadoJson(200, true, 'Tutoría reagenda aceptada');
+
                 }
 
                 $reservaEditar->save();
-                self::estadoJson(200, true, '');
+
+                $cabecera = "Docente";
+                $correo = "alfonso.rm1193@gmail.com";
+                //$correo = $docenteMail->correo;
+                $mensajeaux = "<p>Por favor, revise su perfil en el módulo de tutorías</p>";
+
+                $enviar = new MailController();
+                $enviar->enviarMail($correo,  $asunto,  $mensaje,$mensajeaux ,$cabecera);
+
+                
                 return response()->json($datos, $estado);
             }
         }

@@ -163,6 +163,15 @@ class UsuarioController extends Controller
         return response()->json($datos, $estado);
 
     }
+    public function validarPuertoPermitido($puerto){
+        $permitidos = "0123456789";
+        for ($i=0; $i<strlen($puerto); $i++){
+            if (strpos($permitidos, substr($puerto,$i,1))===false){
+                return false;
+            }
+        }
+        return true;
+    }
     public function digitos_permitidos($cedula){
         $permitidos = "0123456789";
         $numero = $cedula;
@@ -623,7 +632,7 @@ class UsuarioController extends Controller
             return response()->json($datos, $estado);
         }else{
 
-            self::estadoJson(400, true, 'El correo no existe');
+            self::estadoJson(400, true, 'Ingrese correo válido');
             return response()->json($datos, $estado);
         }
         
@@ -719,8 +728,15 @@ class UsuarioController extends Controller
         self::iniciarObjetoJSon();
         $data = $request->json()->all();
         $editar = smt::where("external_smt", $data['externalSmt'])->first();
+
+        $validarPuerto = self::validarPuertoPermitido($data['puerto']);
+        if (!$validarPuerto) {
+           self::estadoJson(300, true, 'El puerto solo permite caracteres numéricos');
+            return response()->json($datos, $estado);
+        }
+
         $editarSmt = smt::find($editar->id);
-       $clave = $data["clave"] ;
+        $clave = $data["clave"] ;
         $editarSmt->correo = $data['correo'] ? $data['correo']: $editar->correo;
         $editarSmt->clave = $data["clave"]? $clave: $editar->clave;
         $editarSmt->puerto = $data["puerto"];
