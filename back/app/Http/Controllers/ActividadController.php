@@ -81,10 +81,10 @@ class ActividadController extends Controller
             $correo = "alfonso.rm1193@gmail.com";
             //$correo = $docenteMail->correo;
             $asunto="Reserva anulada";
-            $mensaje= "Se ha cancelado una reserva de tutoría respecto a: ". 
+            $mensaje= "Se ha cerrado su reserva de tutoría respecto a: ". 
                     $reserva->tema_tutoria  .
                     "<br>".
-                    "Por motivo de:  No se presentó el día de la tutoría ";
+                    "Por motivo de:  No ha asistido el día ". $reserva->fecha ." de la tutoría ";
 
             $mensajeaux = "<p>Muchas gracias por la atención </p>";
 
@@ -233,9 +233,44 @@ class ActividadController extends Controller
         return $estudiante->nombres . " " . $estudiante->apellidos;
     }
 
+    //cuando el dia de la tutoria el estudiante no se presenta a la tutoria
+    public function listartutoriasCerradas(Request $request, $external_id)
+    {
+        global $estado, $datos;
+        self::iniciarObjetoJSon();
+        if ($request->json()) {
+            $data = $request->json()->all();
+            $docenteObj = docente::where("external_do", $external_id)->first();
+            $periodo = periodoAcademico::where("external_periodo", $data["externalPeriodo"])->first();
+            $reservas = reserva::where("id_docente", $docenteObj->id)
+                ->where("id_periodo_academico", $periodo->id)
+                ->where("estado", 0)
+                ->get();
+                $cont=1;
+            foreach ($reservas as $reserva) {
+                $datos['data'][] = [
+                    "cont"=> $cont ++,
+                    "temaTutoria" => $reserva->tema_tutoria,
+                    "modalidad" => $reserva->modalidad,
+                    "fecha" => $reserva->fecha,
+                    "tipoTutoria" => $reserva->tipo_tutoria,
+                    "estudianteCancelado" => self::estudianteCancelado($reserva->id_estudiante),
+                    //"cicloEstudiante" => self::estudianteCanceladoCiclo($reserva->id_estudiante),
+                    "cicloEstudiante" => $reserva->ciclo .' '.$reserva->paralelo
 
+                ];
+            }
+            self::estadoJson(200, true, '');
+            return response()->json($datos, $estado);
+        }
+    }
 
-
+    private function estudianteCancelado($id){
+        $estudiante = estudiante::where("id", $id)->first();
+        $nombres =  $estudiante->nombres;
+        $apellidos =  $estudiante->apellidos;
+        return $nombres." ". $apellidos;
+    }
 
     private static function estadoJson($estadoPeticion, $satisfactorio, $mensaje)
     {

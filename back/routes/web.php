@@ -116,3 +116,6 @@ $router->get('/docente/anulartutoria/{exnternal_reserva}', 'ActividadController@
 
 //relacion laboral
 $router->get('/docente/relacionlaboral/{externalDocente}', 'UsuarioController@relacionLaboral');
+
+//tutoria cerrada - anulada
+$router->post('/docente/tutoriacerrada/{external_id}', 'ActividadController@listartutoriasCerradas');

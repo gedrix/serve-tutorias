@@ -114,32 +114,65 @@ class UsuarioController extends Controller
             $data = $request->json()->all();
             $usuario = usuario::where("external_us", $external_id)->first();
 
-            $verificar_tamanio_cedula = strlen($data['cedula']);
-            $validar_cedula = self::digitos_permitidos($data['cedula']);
+            //validar nombres y apellidos
+            $validarNombre = strlen(trim($data['nombres']));
+            $validarApellido = strlen(trim($data['apellidos']));
 
-            if ($verificar_tamanio_cedula == 10 && $validar_cedula ) {
-                $validarNombre = strlen(trim($data['nombres']));
-                $validarApellido = strlen(trim($data['apellidos']));
-                if ($validarNombre == 0 && $validarApellido == 0) {
-                    self::estadoJson(400, false, 'Por favor ingrese nombres y apellidos');
-                }else{
-                        if ($usuario->tipoUsuario == 2) {
-                        $estudiante = estudiante::where("id_usuario", $usuario->id)->first();
+            if ($validarNombre == 0 && $validarApellido == 0) {
+                self::estadoJson(400, false, 'Por favor ingrese nombres y apellidos');
+                return response()->json($datos, $estado);
+            }
+
+            $carateresNombre = self::validarNombreApellido(trim($data['nombres']));
+            $carateresApellido = self::validarNombreApellido(trim($data['apellidos']));
+ 
+            if ($carateresNombre == 0 || $carateresApellido == 0) {
+                self::estadoJson(400, false, 'El campo nombre o apellido no puede contener numeros o  carateres especiales');
+                return response()->json($datos, $estado);
+            }
+
+            $verificar_tamanio_pasaporte;
+            //preguntar si es cedula o pasaporte
+                if ($data['cedula'] == null && $data['pasaporte'] != null) {
+                    $verificar_tamanio_pasaporte = strlen($data['pasaporte']);
+
+                    if ( $verificar_tamanio_pasaporte < 7 || $verificar_tamanio_pasaporte >10) {
+                        self::estadoJson(400, false, 'El pasaporte debe de contener minimo 7 digitos y maximo 10');
+                        return response()->json($datos, $estado);
+                    }
+                }
+
+
+            if ($data['cedula'] != null) {
+                $verificar_tamanio_cedula = strlen($data['cedula']);
+                $validar_cedula = self::digitos_permitidos($data['cedula']);
+                //&& $validar_cedula
+                if ($verificar_tamanio_cedula < 10 || !$validar_cedula) {
+                    self::estadoJson(400, false, 'La cedula debe de tener 10 dígitos o ingrese cedula valida');
+                    return response()->json($datos, $estado);
+                }
+            }
+
+            //registro
+            $estudiante = estudiante::where("id_usuario", $usuario->id)->first();
                         if ($estudiante) {
                             $estudianteObj = estudiante::find($estudiante->id);
                             $estudianteObj->nombres = $data['nombres'];
                             $estudianteObj->apellidos = $data['apellidos'];
                             $estudianteObj->ciclo = $data['ciclo'];
-                            $estudianteObj->cedula = $data['cedula'];
+                            $estudianteObj->cedula = $data['cedula'] == null? '' : $data['cedula'];
+                            $estudianteObj->pasaporte = $data['pasaporte']== null? '' : $data['pasaporte'];
                             $estudianteObj->paralelo =$data['paralelo'];
                             $estudianteObj->save();
                             self::estadoJson(200, true, '');
+                            return response()->json($datos, $estado);
                         }else{
                             $persona = new estudiante();
                             $persona->nombres = $data["nombres"];
                             $persona->apellidos = $data["apellidos"];
                             $persona->ciclo = $data["ciclo"];
-                            $persona->cedula = $data['cedula'];
+                            $persona->cedula = $data['cedula'] == null? '' : $data['cedula'];
+                            $persona->pasaporte = $data['pasaporte'] == null? '' : $data['pasaporte'];
                             $persona->paralelo =strtoupper($data["paralelo"]) ;
                             $persona->estado = 1;
                             $persona->id_usuario = $usuario->id;
@@ -149,20 +182,22 @@ class UsuarioController extends Controller
                                 "externalEstudiante" => $persona->external_es
                                 ];
                             self::estadoJson(200, true, '');
+                            return response()->json($datos, $estado);
+
                         }
-                    }
-                }
-                
-            }else{
-                self::estadoJson(400, false, 'La cedula debe de tener 10 dígitos o ingrese cedula valida');
-            }
             
         } else {
             self::estadoJson(400, false, 'Datos Incorrectos');
-        }
-        return response()->json($datos, $estado);
+            return response()->json($datos, $estado);
 
+        }
     }
+
+    public function validarNombreApellido($cadena){
+        $pattern = "/^[a-zA-Z\sñáéíóúÁÉÍÓÚ]+$/";
+        return preg_match($pattern, trim($cadena));
+    }
+
     public function validarPuertoPermitido($puerto){
         $permitidos = "0123456789";
         for ($i=0; $i<strlen($puerto); $i++){
@@ -253,8 +288,11 @@ class UsuarioController extends Controller
             $usuario = usuario::where("external_us", $external_id)->first();
             $validarNombre = strlen(trim($data['nombres']));
             $validarApellido = strlen(trim($data['apellidos']));
-            if ($validarNombre == 0 && $validarApellido == 0) {
-                 self::estadoJson(400, false, 'Por favor ingrese nombres y apellidos');
+            $carateresNombre = self::validarNombreApellido(trim($data['nombres']));
+            $carateresApellido = self::validarNombreApellido(trim($data['apellidos']));
+
+            if (($validarNombre == 0 && $validarApellido == 0) || ($carateresNombre == 0 || $carateresApellido == 0))  {
+                 self::estadoJson(400, false, 'Por favor ingrese nombres y apellidos correctos');
             }else{
                 if ($usuario->tipoUsuario == 1) {
                     $docente = docente::where("id_usuario", $usuario->id)->first();
@@ -319,7 +357,7 @@ class UsuarioController extends Controller
                             "externalUsuario" => $usuario->external_us,
                             "nombreUsuario" => $estudiante?  $estudiante->nombres ." ". $estudiante->apellidos : '',
                             //"cedula" => $estudiante?  $estudiante->cedula : '',
-                            "externalEstudiante" =>$estudiante? $estudiante->external_es: '',
+                            "externalEstudiante" =>$estudiante? $estudiante->external_es : '',
                             "externalPeriodo" =>$periodo ? $periodo->external_periodo : '',
                             // "ciclo" => $estudiante ? $estudiante->ciclo : '',
                             // "paralelo" => $estudiante? $estudiante->paralelo: '',
@@ -403,6 +441,7 @@ class UsuarioController extends Controller
                     "ciclo" => $estudiante->ciclo,
                     "paralelo" => $estudiante->paralelo,
                     "cedula" => $estudiante->cedula,
+                    "pasaporte" => $estudiante->pasaporte,
                     "externalEstudiante" => $estudiante->external_es,
                     //"external_usuario" => $estudianteObj->external_us
                 ];

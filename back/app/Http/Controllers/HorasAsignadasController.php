@@ -68,13 +68,14 @@ class HorasAsignadasController extends Controller
 
             $editar = HorasAsignadas::where("id_docente", $docenteObj->id)
                                     ->where("id_periodo_academico", $periodo->id)
+                                    ->where("estado", "=", 1)
                                     ->first();
 
             $editarHorasAsignadasDocente = HorasAsignadas::find($editar->id);
             $editarHorasAsignadasDocente->horas_academicas = $data["horas_academicas"];
             $editarHorasAsignadasDocente->dias_academicas = $data["dias_academicas"];
-            $editarHorasAsignadasDocente->horas_titulacion = $data["horas_titulacion"];
-            $editarHorasAsignadasDocente->dias_titulacion = $data["dias_titulacion"];
+            $editarHorasAsignadasDocente->horas_titulacion = $data["horas_titulacion"] == null ? '' : $data["horas_titulacion"];
+            $editarHorasAsignadasDocente->dias_titulacion = $data["dias_titulacion"]== null ? '' : $data["dias_titulacion"];
             $editarHorasAsignadasDocente->save();
             self::estadoJson(200, true, 'Se han actualizado las horas asignadas');
         }else{

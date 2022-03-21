@@ -25,18 +25,29 @@ class TitulacionController extends Controller {
             $verExisteEst = Titulacion::where("estudiante", $estudianteObj->id)
                                         ->where("estado",1)
                                         ->first();
-                 
+
+            $verExisteEstPar = Titulacion::where("pareja", $estudianteObj->id)
+                                        ->where("estado",1)
+                                        ->first();     
             $parejaObj = '';
+            $verExistepareja = '';
+            $verExisteEstudiantepareja ='';
             if ($data["externalPareja"] != '') {
                 $parejaObj = estudiante::where("external_es", $data["externalPareja"])->first();
+                $verExistepareja = Titulacion::where("pareja", $parejaObj->id)->where("estado",1)->first();
+                $verExisteEstudiantepareja = Titulacion::where("estudiante", $parejaObj->id)->where("estado",1)->first();
             }
             
-            $verExistepareja = Titulacion::where("pareja", $estudianteObj->id)->where("estado",1)->first();
 
             $docenteObj = docente::where("external_do", $data["externalDocente"])->first();
             
-            if ($verExisteEst || $verExistepareja) {
-                self::estadoJson(400, false, 'Ya existe un registro');
+            if ($estudianteObj->ciclo == '1' || $estudianteObj->ciclo == '2' || $estudianteObj->ciclo == '3'|| $estudianteObj->ciclo == '4' || $estudianteObj->ciclo == '5' || $estudianteObj->ciclo == '6' || $estudianteObj->ciclo == '7' || $estudianteObj->ciclo == '8') {
+                self::estadoJson(300, false, 'Lo sentimos, no tiene permiso para realizar esta accion');
+                return response()->json($datos, $estado);
+            }
+            if ($verExisteEst || $verExistepareja || $verExisteEstPar || $verExisteEstudiantepareja) {
+                self::estadoJson(400, false, 'Ya existe un registro, verifique su pareja no tenga tema registrado');
+                return response()->json($datos, $estado);
             }else{
                 $titulacion = new Titulacion();
                 $titulacion->tema = $data["tema"];
@@ -51,9 +62,10 @@ class TitulacionController extends Controller {
                 $datos['data'] = [
                     "externalTitulacion" => $titulacion->external_titulacion
                 ];
+                return response()->json($datos, $estado);
             }
         }
-        return response()->json($datos, $estado);
+        
     }
 
     public function ModificarTemaTitulacion(Request $request){

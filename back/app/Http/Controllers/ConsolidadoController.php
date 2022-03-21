@@ -47,7 +47,7 @@ class ConsolidadoController extends Controller
             }
             self::estadoJson(200, true, '');
         }else{
-             self::estadoJson(400, true, 'El docente no tiene asginado temas de titulación');
+             self::estadoJson(300, true, 'No han Solicitado tutorias de titulación al docente');
         }
         
         return response()->json($datos, $estado);
@@ -63,7 +63,7 @@ class ConsolidadoController extends Controller
 
         $submit = DB::select('call actividad_titulacion_por_tema(:parametro0, :parametro, :parametro2)', array('parametro0'=>$titulacion->id,'parametro'=>$periodo->id, 'parametro2'=>$docenteObj->id));
 
-        $cont =1;
+        $cont =0;
         foreach($submit  as $row)
         {
             $datos['data'][] = [
@@ -144,9 +144,17 @@ class ConsolidadoController extends Controller
            
         }
 
+        if ($horasBrindadas >0) {
+           $mod= $horasBrindadas % 60;
+           $hora =  intval($horasBrindadas /60);
+        }else{
+            $hora = 0;
+            $mod =0;
+        }
+
          $datos['data'][] = [
                 
-                "totalHoras" => $horasBrindadas,
+                "totalHoras" => $hora .' hora '. $mod . ' min',
                 "total_n_estudiante"=> $totalEstudiante,
             ];
         self::estadoJson(200, true, '');
@@ -196,9 +204,15 @@ class ConsolidadoController extends Controller
             $totalH = $totalH + $row->tiempo;
             $totalE = $totalE + $row->estudiante;
         }
-        $totalH = 121;
-        $mod= $totalH % 60;
-        $hora =  intval($totalH /60);
+        if ($totalH > 0) {
+            
+            $mod= $totalH % 60;
+            $hora =  intval($totalH /60);
+        }else{
+            $hora = 0;
+            $mod =0;
+        }
+        
          $datos['data'][] = [
                 "total_horas_brindadas"=>  $hora .' hora '. $mod . ' min',
                 "total_n_estudiante"=>$totalE
