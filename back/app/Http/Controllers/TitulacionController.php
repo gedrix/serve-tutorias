@@ -20,15 +20,13 @@ class TitulacionController extends Controller {
         self::iniciarObjetoJSon();
         if ($request->json()) {
             $data = $request->json()->all();
-            $estudianteObj = estudiante::where("external_es", $data["externalEstdudiante"])->first();
-            
+            $estudianteObj = Estudiante::where("external_es", $data["externalEstdudiante"])->first();
             $verExisteEst = Titulacion::where("estudiante", $estudianteObj->id)
                                         ->where("estado",1)
                                         ->first();
-
             $verExisteEstPar = Titulacion::where("pareja", $estudianteObj->id)
                                         ->where("estado",1)
-                                        ->first();     
+                                        ->first();  
             $parejaObj = '';
             $verExistepareja = '';
             $verExisteEstudiantepareja ='';

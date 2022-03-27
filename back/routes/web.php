@@ -112,7 +112,7 @@ $router->post('/docente/diasAsignadosAD8/{external_id}', 'HorasAsignadasControll
 
 
 //anular tutoria
-$router->get('/docente/anulartutoria/{exnternal_reserva}', 'ActividadController@anulartutoria');
+$router->get('/docente/anulartutoria/{exnternal_reserva}', 'ActividadController@anularTutoria');
 
 //relacion laboral
 $router->get('/docente/relacionlaboral/{externalDocente}', 'UsuarioController@relacionLaboral');

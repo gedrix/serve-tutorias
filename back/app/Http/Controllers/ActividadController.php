@@ -65,7 +65,7 @@ class ActividadController extends Controller
         }
     }
 
-    public function anulartutoria($exnternal_reserva){
+    public function anularTutoria($exnternal_reserva){
         global $estado, $datos;
         self::iniciarObjetoJSon();
         
@@ -92,7 +92,7 @@ class ActividadController extends Controller
 
             $enviar->enviarMail($correo,  $asunto,  $mensaje, $mensajeaux, $cabecera);
 
-        self::estadoJson(200, true, 'Turoria Anulada');
+        self::estadoJson(200, true, 'Tutoria Anulada');
         return response()->json($datos, $estado);
 
 
